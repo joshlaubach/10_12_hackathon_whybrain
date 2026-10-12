@@ -7,7 +7,7 @@ const fixtures = (name: string) => JSON.parse(readFileSync(`../../packages/contr
 test("connected API uses response provenance and detects interrupted streams without falling back", async ({ page }) => {
   let replay = false;
   let interrupted = false;
-  await page.route("http://localhost:8000/api/**", async route => {
+  await page.route(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/**`, async route => {
     const path = new URL(route.request().url()).pathname;
     const headers = { "Access-Control-Allow-Origin": "*" };
     if (path.endsWith("/health") || path.endsWith("/decisions")) {
@@ -16,11 +16,12 @@ test("connected API uses response provenance and detects interrupted streams wit
       const request = route.request().postDataJSON() as Schema<"AskRequest">;
       replay = request.mode_preference === "REPLAY";
       const events = (fixtures("stream_ask_386_440") as Schema<"StreamEvent">[]).map(e => ({ ...e, fixture: replay }));
-      const body = (interrupted ? events.slice(0, -1) : events).map(e => `event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`).join("");
+      const body = (interrupted ? events.slice(0, -1) : events).map(e => `data: ${JSON.stringify(e)}\n\n`).join("");
       await route.fulfill({ headers, contentType: "text/event-stream", body });
     } else await route.fulfill({ status: 404, headers });
   });
   await page.goto("/");
+  await page.getByLabel("Data source").selectOption("mock");
   await page.getByLabel("Data source").selectOption("api");
   await expect(page.locator(".library-heading")).toContainText("24");
   await expect(page.getByText("Awaiting response", { exact: true })).toBeVisible();

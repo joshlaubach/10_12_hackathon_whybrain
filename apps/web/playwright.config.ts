@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+// The browser gate exercises a configured API; application defaults stay explicit.
+process.env.NEXT_PUBLIC_API_URL ||= "http://localhost:8001";
+
 export default defineConfig({
   testDir: "./tests/browser",
   fullyParallel: false,

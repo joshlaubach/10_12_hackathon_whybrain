@@ -12,5 +12,5 @@ export default async function Page() {
   ]);
   const initialAnswer = events.find(event => event.type === "answer_completed");
   if (!initialAnswer) throw new Error("The initial answer fixture is missing.");
-  return <Workspace initialList={initialList} initialHealth={initialHealth} initialAnswer={initialAnswer} snapshotDate={date} />;
+  return <Workspace initialList={initialList} initialHealth={initialHealth} initialAnswer={initialAnswer} snapshotDate={date} configuredApi={Boolean(process.env.NEXT_PUBLIC_API_URL)} />;
 }
