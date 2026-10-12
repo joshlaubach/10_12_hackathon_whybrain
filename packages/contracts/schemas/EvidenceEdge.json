@@ -1,0 +1,116 @@
+{
+  "$defs": {
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "doc_id": {
+          "title": "Doc Id",
+          "type": "string"
+        },
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "description": "Whitespace-normalised substring of the source document",
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "doc_id",
+        "quote",
+        "locator"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "edge_id": {
+      "title": "Edge Id",
+      "type": "string"
+    },
+    "explanation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Explanation"
+    },
+    "origin": {
+      "enum": [
+        "source_header",
+        "proposal",
+        "inferred"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "relation": {
+      "enum": [
+        "replaces",
+        "superseded_by",
+        "proposes_to_replace",
+        "potential_conflict"
+      ],
+      "title": "Relation",
+      "type": "string"
+    },
+    "source_doc_id": {
+      "description": "A doc_id, 'proposal', or 'draft:<draft_id>'",
+      "title": "Source Doc Id",
+      "type": "string"
+    },
+    "supporting_evidence": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRef"
+      },
+      "title": "Supporting Evidence",
+      "type": "array"
+    },
+    "target_doc_id": {
+      "title": "Target Doc Id",
+      "type": "string"
+    },
+    "target_in_corpus": {
+      "description": "False renders as an explicit gap (missing successor)",
+      "title": "Target In Corpus",
+      "type": "boolean"
+    },
+    "uncertainty": {
+      "anyOf": [
+        {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Uncertainty"
+    }
+  },
+  "required": [
+    "edge_id",
+    "source_doc_id",
+    "target_doc_id",
+    "relation",
+    "origin",
+    "target_in_corpus",
+    "supporting_evidence"
+  ],
+  "title": "EvidenceEdge",
+  "type": "object"
+}

@@ -1,0 +1,14 @@
+{
+  "status": "ok",
+  "configured": {
+    "hydradb": true,
+    "anthropic": true
+  },
+  "snapshot_id": "peps-c977468c8532",
+  "corpus": {
+    "documents": 24,
+    "source_header_edges": 17,
+    "missing_successors": 2
+  },
+  "note": "Configuration only. The mode of an answer is provenance.mode_used, never this."
+}

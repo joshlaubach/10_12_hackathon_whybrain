@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "Configured": {
+      "additionalProperties": false,
+      "properties": {
+        "anthropic": {
+          "title": "Anthropic",
+          "type": "boolean"
+        },
+        "hydradb": {
+          "title": "Hydradb",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "hydradb",
+        "anthropic"
+      ],
+      "title": "Configured",
+      "type": "object"
+    },
+    "CorpusCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "documents": {
+          "title": "Documents",
+          "type": "integer"
+        },
+        "missing_successors": {
+          "title": "Missing Successors",
+          "type": "integer"
+        },
+        "source_header_edges": {
+          "title": "Source Header Edges",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "documents",
+        "source_header_edges",
+        "missing_successors"
+      ],
+      "title": "CorpusCounts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "configured": {
+      "$ref": "#/$defs/Configured"
+    },
+    "corpus": {
+      "$ref": "#/$defs/CorpusCounts"
+    },
+    "note": {
+      "default": "Configuration only. The mode of an answer is provenance.mode_used, never this.",
+      "title": "Note",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "ok",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "status",
+    "configured",
+    "snapshot_id",
+    "corpus"
+  ],
+  "title": "HealthResponse",
+  "type": "object"
+}

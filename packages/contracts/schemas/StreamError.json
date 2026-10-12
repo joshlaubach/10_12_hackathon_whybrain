@@ -1,0 +1,60 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "enum": [
+        "model_unavailable",
+        "hydradb_unavailable",
+        "retrieval_failed",
+        "invalid_request",
+        "draft_conflict",
+        "not_found",
+        "stream_interrupted",
+        "timeout",
+        "tool_limit_exceeded",
+        "internal_error"
+      ],
+      "title": "Code",
+      "type": "string"
+    },
+    "fixture": {
+      "default": false,
+      "description": "True for recorded fixtures; the UI shows 'Mock data'",
+      "title": "Fixture",
+      "type": "boolean"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "retryable": {
+      "title": "Retryable",
+      "type": "boolean"
+    },
+    "seq": {
+      "description": "Strictly increasing within a request, starting at 0",
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "type": {
+      "const": "error",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "seq",
+    "type",
+    "code",
+    "message",
+    "retryable"
+  ],
+  "title": "StreamError",
+  "type": "object"
+}

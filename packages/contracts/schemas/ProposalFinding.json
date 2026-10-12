@@ -1,0 +1,66 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim": {
+      "description": "The part of the proposal this finding concerns",
+      "title": "Claim",
+      "type": "string"
+    },
+    "doc_id": {
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "explanation": {
+      "title": "Explanation",
+      "type": "string"
+    },
+    "finding_id": {
+      "title": "Finding Id",
+      "type": "string"
+    },
+    "locator": {
+      "title": "Locator",
+      "type": "string"
+    },
+    "quote": {
+      "title": "Quote",
+      "type": "string"
+    },
+    "relation": {
+      "description": "suggests_replacing means the proposal would replace this decision if accepted; UI copy: 'Suggested replacement (not an accepted change)'",
+      "enum": [
+        "may_contradict",
+        "may_repeat",
+        "suggests_replacing"
+      ],
+      "title": "Relation",
+      "type": "string"
+    },
+    "source_url": {
+      "title": "Source Url",
+      "type": "string"
+    },
+    "uncertainty": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Uncertainty",
+      "type": "string"
+    }
+  },
+  "required": [
+    "finding_id",
+    "claim",
+    "doc_id",
+    "source_url",
+    "quote",
+    "locator",
+    "relation",
+    "explanation",
+    "uncertainty"
+  ],
+  "title": "ProposalFinding",
+  "type": "object"
+}

@@ -1,0 +1,160 @@
+{
+  "$defs": {
+    "DocRef": {
+      "additionalProperties": false,
+      "properties": {
+        "doc_id": {
+          "title": "Doc Id",
+          "type": "string"
+        },
+        "in_corpus": {
+          "title": "In Corpus",
+          "type": "boolean"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "doc_id",
+        "source_url",
+        "in_corpus"
+      ],
+      "title": "DocRef",
+      "type": "object"
+    },
+    "Section": {
+      "additionalProperties": false,
+      "properties": {
+        "heading": {
+          "title": "Heading",
+          "type": "string"
+        },
+        "locator": {
+          "description": "Heading text, or 'Header' for the header block",
+          "title": "Locator",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "locator",
+        "heading",
+        "text"
+      ],
+      "title": "Section",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authors": {
+      "description": "Recorded contacts from the source, not current owners",
+      "items": {
+        "type": "string"
+      },
+      "title": "Authors",
+      "type": "array"
+    },
+    "body_text": {
+      "title": "Body Text",
+      "type": "string"
+    },
+    "discussions_to": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Discussions To"
+    },
+    "doc_id": {
+      "description": "Stable id, e.g. pep-0386",
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "missing_successors": {
+      "description": "superseded_by ids that are not in the corpus snapshot",
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Successors",
+      "type": "array"
+    },
+    "replaces": {
+      "description": "From the source Replaces header",
+      "items": {
+        "$ref": "#/$defs/DocRef"
+      },
+      "title": "Replaces",
+      "type": "array"
+    },
+    "resolution_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Resolution Url"
+    },
+    "sections": {
+      "items": {
+        "$ref": "#/$defs/Section"
+      },
+      "title": "Sections",
+      "type": "array"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "source_status": {
+      "description": "Verbatim source Status header: Final, Superseded, Withdrawn, ...",
+      "title": "Source Status",
+      "type": "string"
+    },
+    "source_url": {
+      "title": "Source Url",
+      "type": "string"
+    },
+    "superseded_by": {
+      "description": "From the source Superseded-By header",
+      "items": {
+        "$ref": "#/$defs/DocRef"
+      },
+      "title": "Superseded By",
+      "type": "array"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "doc_id",
+    "source_url",
+    "title",
+    "source_status",
+    "authors",
+    "replaces",
+    "superseded_by",
+    "missing_successors",
+    "snapshot_id",
+    "body_text",
+    "sections"
+  ],
+  "title": "DecisionDetail",
+  "type": "object"
+}

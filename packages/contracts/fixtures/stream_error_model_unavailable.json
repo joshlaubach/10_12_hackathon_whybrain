@@ -1,0 +1,44 @@
+[
+  {
+    "request_id": "req-err-1",
+    "seq": 0,
+    "fixture": true,
+    "type": "request_started",
+    "mode": "LOCAL",
+    "snapshot_id": "peps-c977468c8532"
+  },
+  {
+    "request_id": "req-err-1",
+    "seq": 1,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "args": {
+      "query": "why was PEP 386 replaced"
+    }
+  },
+  {
+    "request_id": "req-err-1",
+    "seq": 2,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "ok": true,
+    "summary": "2 passages (local snapshot)",
+    "doc_ids": [
+      "pep-0386",
+      "pep-0440"
+    ]
+  },
+  {
+    "request_id": "req-err-1",
+    "seq": 3,
+    "fixture": true,
+    "type": "error",
+    "code": "model_unavailable",
+    "message": "The model could not be reached; no answer was generated.",
+    "retryable": true
+  }
+]

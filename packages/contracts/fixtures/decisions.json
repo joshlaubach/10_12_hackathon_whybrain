@@ -1,0 +1,489 @@
+{
+  "snapshot_id": "peps-c977468c8532",
+  "documents": [
+    {
+      "doc_id": "pep-0008",
+      "source_url": "https://peps.python.org/pep-0008/",
+      "title": "Style Guide for Python Code",
+      "source_status": "Active",
+      "authors": [
+        "Guido van Rossum <guido@python.org>",
+        "Barry Warsaw <barry@python.org>",
+        "Alyssa Coghlan <ncoghlan@gmail.com>"
+      ],
+      "discussions_to": null,
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0287",
+      "source_url": "https://peps.python.org/pep-0287/",
+      "title": "reStructuredText Docstring Format",
+      "source_status": "Active",
+      "authors": [
+        "David Goodger <goodger@python.org>"
+      ],
+      "discussions_to": "doc-sig@python.org",
+      "resolution_url": null,
+      "replaces": [
+        {
+          "doc_id": "pep-0216",
+          "source_url": "https://peps.python.org/pep-0216/",
+          "in_corpus": false
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0291",
+      "source_url": "https://peps.python.org/pep-0291/",
+      "title": "Backward Compatibility for the Python 2 Standard Library",
+      "source_status": "Superseded",
+      "authors": [
+        "Neal Norwitz <nnorwitz@gmail.com>"
+      ],
+      "discussions_to": null,
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0387",
+          "source_url": "https://peps.python.org/pep-0387/",
+          "in_corpus": false
+        }
+      ],
+      "missing_successors": [
+        "pep-0387"
+      ],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0314",
+      "source_url": "https://peps.python.org/pep-0314/",
+      "title": "Metadata for Python Software Packages 1.1",
+      "source_status": "Superseded",
+      "authors": [
+        "A.M. Kuchling",
+        "Richard Jones"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": null,
+      "replaces": [
+        {
+          "doc_id": "pep-0241",
+          "source_url": "https://peps.python.org/pep-0241/",
+          "in_corpus": false
+        }
+      ],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0345",
+          "source_url": "https://peps.python.org/pep-0345/",
+          "in_corpus": true
+        }
+      ],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0333",
+      "source_url": "https://peps.python.org/pep-0333/",
+      "title": "Python Web Server Gateway Interface v1.0",
+      "source_status": "Final",
+      "authors": [
+        "Phillip J. Eby <pje@telecommunity.com>"
+      ],
+      "discussions_to": "web-sig@python.org",
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [
+        {
+          "doc_id": "pep-3333",
+          "source_url": "https://peps.python.org/pep-3333/",
+          "in_corpus": true
+        }
+      ],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0345",
+      "source_url": "https://peps.python.org/pep-0345/",
+      "title": "Metadata for Python Software Packages 1.2",
+      "source_status": "Superseded",
+      "authors": [
+        "Richard Jones <richard@python.org>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/archives/list/python-dev@python.org/thread/MKHXVV746H7ZDFN62Z72VNAX6KIRXNRO/",
+      "replaces": [
+        {
+          "doc_id": "pep-0314",
+          "source_url": "https://peps.python.org/pep-0314/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0566",
+          "source_url": "https://peps.python.org/pep-0566/",
+          "in_corpus": true
+        }
+      ],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0386",
+      "source_url": "https://peps.python.org/pep-0386/",
+      "title": "Changing the version comparison module in Distutils",
+      "source_status": "Superseded",
+      "authors": [
+        "Tarek Ziadé <tarek@ziade.org>"
+      ],
+      "discussions_to": null,
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0440",
+          "source_url": "https://peps.python.org/pep-0440/",
+          "in_corpus": true
+        }
+      ],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0425",
+      "source_url": "https://peps.python.org/pep-0425/",
+      "title": "Compatibility Tags for Built Distributions",
+      "source_status": "Final",
+      "authors": [
+        "Daniel Holth <dholth@gmail.com>"
+      ],
+      "discussions_to": null,
+      "resolution_url": "https://mail.python.org/pipermail/python-dev/2013-February/124116.html",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0426",
+      "source_url": "https://peps.python.org/pep-0426/",
+      "title": "Metadata for Python Software Packages 2.0",
+      "source_status": "Withdrawn",
+      "authors": [
+        "Alyssa Coghlan <ncoghlan@gmail.com>",
+        "Daniel Holth <dholth@gmail.com>",
+        "Donald Stufft <donald@stufft.io>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": null,
+      "replaces": [
+        {
+          "doc_id": "pep-0345",
+          "source_url": "https://peps.python.org/pep-0345/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0566",
+          "source_url": "https://peps.python.org/pep-0566/",
+          "in_corpus": true
+        }
+      ],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0440",
+      "source_url": "https://peps.python.org/pep-0440/",
+      "title": "Version Identification and Dependency Specification",
+      "source_status": "Final",
+      "authors": [
+        "Alyssa Coghlan <ncoghlan@gmail.com>",
+        "Donald Stufft <donald@stufft.io>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/distutils-sig/2014-August/024673.html",
+      "replaces": [
+        {
+          "doc_id": "pep-0386",
+          "source_url": "https://peps.python.org/pep-0386/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0484",
+      "source_url": "https://peps.python.org/pep-0484/",
+      "title": "Type Hints",
+      "source_status": "Final",
+      "authors": [
+        "Guido van Rossum <guido@python.org>",
+        "Jukka Lehtosalo <jukka.lehtosalo@iki.fi>",
+        "Łukasz Langa <lukasz@python.org>"
+      ],
+      "discussions_to": "python-dev@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/python-dev/2015-May/140104.html",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0508",
+      "source_url": "https://peps.python.org/pep-0508/",
+      "title": "Dependency specification for Python Software Packages",
+      "source_status": "Final",
+      "authors": [
+        "Robert Collins <rbtcollins@hp.com>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/distutils-sig/2015-November/027868.html",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0517",
+      "source_url": "https://peps.python.org/pep-0517/",
+      "title": "A build-system independent format for source trees",
+      "source_status": "Final",
+      "authors": [
+        "Nathaniel J. Smith <njs@pobox.com>",
+        "Thomas Kluyver <thomas@kluyver.me.uk>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/distutils-sig/2017-September/031548.html",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0518",
+      "source_url": "https://peps.python.org/pep-0518/",
+      "title": "Specifying Minimum Build System Requirements for Python Projects",
+      "source_status": "Final",
+      "authors": [
+        "Brett Cannon <brett@python.org>",
+        "Nathaniel J. Smith <njs@pobox.com>",
+        "Donald Stufft <donald@stufft.io>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/distutils-sig/2016-May/028969.html",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0563",
+      "source_url": "https://peps.python.org/pep-0563/",
+      "title": "Postponed Evaluation of Annotations",
+      "source_status": "Superseded",
+      "authors": [
+        "Łukasz Langa <lukasz@python.org>"
+      ],
+      "discussions_to": "python-dev@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/python-dev/2017-December/151042.html",
+      "replaces": [],
+      "superseded_by": [
+        {
+          "doc_id": "pep-0649",
+          "source_url": "https://peps.python.org/pep-0649/",
+          "in_corpus": true
+        },
+        {
+          "doc_id": "pep-0749",
+          "source_url": "https://peps.python.org/pep-0749/",
+          "in_corpus": false
+        }
+      ],
+      "missing_successors": [
+        "pep-0749"
+      ],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0566",
+      "source_url": "https://peps.python.org/pep-0566/",
+      "title": "Metadata for Python Software Packages 2.1",
+      "source_status": "Final",
+      "authors": [
+        "Dustin Ingram <di@python.org>"
+      ],
+      "discussions_to": "distutils-sig@python.org",
+      "resolution_url": "https://mail.python.org/pipermail/distutils-sig/2018-February/032014.html",
+      "replaces": [
+        {
+          "doc_id": "pep-0345",
+          "source_url": "https://peps.python.org/pep-0345/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0585",
+      "source_url": "https://peps.python.org/pep-0585/",
+      "title": "Type Hinting Generics In Standard Collections",
+      "source_status": "Final",
+      "authors": [
+        "Łukasz Langa <lukasz@python.org>"
+      ],
+      "discussions_to": "typing-sig@python.org",
+      "resolution_url": "https://mail.python.org/archives/list/python-dev@python.org/thread/HW2NFOEMCVCTAFLBLC3V7MLM6ZNMKP42/",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0604",
+      "source_url": "https://peps.python.org/pep-0604/",
+      "title": "Allow writing union types as ``X | Y``",
+      "source_status": "Final",
+      "authors": [
+        "Philippe PRADOS <python@prados.fr>",
+        "Maggie Moss <maggiebmoss@gmail.com>"
+      ],
+      "discussions_to": "typing-sig@python.org",
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0621",
+      "source_url": "https://peps.python.org/pep-0621/",
+      "title": "Storing project metadata in pyproject.toml",
+      "source_status": "Final",
+      "authors": [
+        "Brett Cannon <brett@python.org>",
+        "Dustin Ingram <di@python.org>",
+        "Paul Ganssle <paul at ganssle.io>",
+        "Pradyun Gedam <pradyunsg@gmail.com>",
+        "Sébastien Eustace <sebastien@eustace.io>",
+        "Thomas Kluyver <thomas@kluyver.me.uk>",
+        "Tzu-ping Chung <uranusjr@gmail.com>"
+      ],
+      "discussions_to": "https://discuss.python.org/t/pep-621-round-3/5472",
+      "resolution_url": "https://discuss.python.org/t/pep-621-round-3/5472/109",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0643",
+      "source_url": "https://peps.python.org/pep-0643/",
+      "title": "Metadata for Package Source Distributions",
+      "source_status": "Final",
+      "authors": [
+        "Paul Moore <p.f.moore@gmail.com>"
+      ],
+      "discussions_to": "https://discuss.python.org/t/pep-643-metadata-for-package-source-distributions/5577",
+      "resolution_url": "https://discuss.python.org/t/pep-643-metadata-for-package-source-distributions/5577/53",
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-0649",
+      "source_url": "https://peps.python.org/pep-0649/",
+      "title": "Deferred Evaluation Of Annotations Using Descriptors",
+      "source_status": "Final",
+      "authors": [
+        "Larry Hastings <larry@hastings.org>"
+      ],
+      "discussions_to": "https://discuss.python.org/t/pep-649-deferred-evaluation-of-annotations-tentatively-accepted/21331/",
+      "resolution_url": "https://discuss.python.org/t/pep-649-deferred-evaluation-of-annotations-tentatively-accepted/21331/43",
+      "replaces": [
+        {
+          "doc_id": "pep-0563",
+          "source_url": "https://peps.python.org/pep-0563/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-3107",
+      "source_url": "https://peps.python.org/pep-3107/",
+      "title": "Function Annotations",
+      "source_status": "Final",
+      "authors": [
+        "Collin Winter <collinwinter@google.com>",
+        "Tony Lownds <tony@lownds.com>"
+      ],
+      "discussions_to": null,
+      "resolution_url": null,
+      "replaces": [],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-3156",
+      "source_url": "https://peps.python.org/pep-3156/",
+      "title": "Asynchronous IO Support Rebooted: the \"asyncio\" Module",
+      "source_status": "Final",
+      "authors": [
+        "Guido van Rossum <guido@python.org>"
+      ],
+      "discussions_to": "python-tulip@googlegroups.com",
+      "resolution_url": "https://mail.python.org/pipermail/python-dev/2013-November/130419.html",
+      "replaces": [
+        {
+          "doc_id": "pep-3153",
+          "source_url": "https://peps.python.org/pep-3153/",
+          "in_corpus": false
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    },
+    {
+      "doc_id": "pep-3333",
+      "source_url": "https://peps.python.org/pep-3333/",
+      "title": "Python Web Server Gateway Interface v1.0.1",
+      "source_status": "Final",
+      "authors": [
+        "Phillip J. Eby <pje@telecommunity.com>"
+      ],
+      "discussions_to": "web-sig@python.org",
+      "resolution_url": null,
+      "replaces": [
+        {
+          "doc_id": "pep-0333",
+          "source_url": "https://peps.python.org/pep-0333/",
+          "in_corpus": true
+        }
+      ],
+      "superseded_by": [],
+      "missing_successors": [],
+      "snapshot_id": "peps-c977468c8532"
+    }
+  ]
+}

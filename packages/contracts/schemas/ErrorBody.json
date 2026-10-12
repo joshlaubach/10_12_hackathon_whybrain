@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "enum": [
+        "model_unavailable",
+        "hydradb_unavailable",
+        "retrieval_failed",
+        "invalid_request",
+        "draft_conflict",
+        "not_found",
+        "stream_interrupted",
+        "timeout",
+        "tool_limit_exceeded",
+        "internal_error"
+      ],
+      "title": "Code",
+      "type": "string"
+    },
+    "message": {
+      "title": "Message",
+      "type": "string"
+    },
+    "request_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Request Id"
+    },
+    "retryable": {
+      "title": "Retryable",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "code",
+    "message",
+    "retryable"
+  ],
+  "title": "ErrorBody",
+  "type": "object"
+}

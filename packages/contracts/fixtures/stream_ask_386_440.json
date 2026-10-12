@@ -1,0 +1,184 @@
+[
+  {
+    "request_id": "req-ask-386",
+    "seq": 0,
+    "fixture": true,
+    "type": "request_started",
+    "mode": "LIVE",
+    "snapshot_id": "peps-c977468c8532"
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 1,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "args": {
+      "query": "why was PEP 386 replaced"
+    }
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 2,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "ok": true,
+    "summary": "2 passages, top hit PEP 386",
+    "doc_ids": [
+      "pep-0386",
+      "pep-0440"
+    ]
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 3,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-2",
+    "tool": "follow_edges",
+    "args": {
+      "doc_id": "pep-0386",
+      "relation": "superseded_by"
+    }
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 4,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-2",
+    "tool": "follow_edges",
+    "ok": true,
+    "summary": "PEP 386 is superseded by PEP 440",
+    "doc_ids": [
+      "pep-0440"
+    ]
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 5,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-3",
+    "tool": "get_decision",
+    "args": {
+      "doc_id": "pep-0440"
+    }
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 6,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-3",
+    "tool": "get_decision",
+    "ok": true,
+    "summary": "Read PEP 440 rationale",
+    "doc_ids": [
+      "pep-0440"
+    ]
+  },
+  {
+    "request_id": "req-ask-386",
+    "seq": 7,
+    "fixture": true,
+    "type": "answer_completed",
+    "answer": "PEP 386 was superseded by PEP 440. PEP 440 says it addresses several limitations of the earlier versioning approach in PEP 345 and PEP 386, and that it supersedes PEP 386 even for metadata v1.2. One stated reason: it sorts top-level .devN releases ahead of alpha releases, because projects do not want developmental releases sorted between their release candidates and final releases. As of this corpus snapshot PEP 386 is Superseded and PEP 440 is Final.",
+    "abstained": false,
+    "abstain_reason": null,
+    "citations": [
+      {
+        "doc_id": "pep-0386",
+        "quote": "Superseded-By: 440",
+        "locator": "Header",
+        "source_url": "https://peps.python.org/pep-0386/"
+      },
+      {
+        "doc_id": "pep-0386",
+        "quote": "Note: This PEP has been superseded by the version identification and dependency specification scheme defined in :pep:`440`.",
+        "locator": "Abstract",
+        "source_url": "https://peps.python.org/pep-0386/"
+      },
+      {
+        "doc_id": "pep-0440",
+        "quote": "Replaces: 386",
+        "locator": "Header",
+        "source_url": "https://peps.python.org/pep-0440/"
+      },
+      {
+        "doc_id": "pep-0440",
+        "quote": "This document addresses several limitations of the previous attempt at a standardized approach to versioning, as described in :pep:`345` and :pep:`386`.",
+        "locator": "Abstract",
+        "source_url": "https://peps.python.org/pep-0440/"
+      },
+      {
+        "doc_id": "pep-0440",
+        "quote": "this PEP MUST be used for all versions of metadata and supersedes :pep:`386` even for metadata v1.2.",
+        "locator": "Version ordering across different metadata versions",
+        "source_url": "https://peps.python.org/pep-0440/"
+      },
+      {
+        "doc_id": "pep-0440",
+        "quote": "This is a far more logical sort order, as projects already using both development releases and alphas/betas/release candidates do not want their developmental releases sorted in between their release candidates and their final releases.",
+        "locator": "Changing the version scheme",
+        "source_url": "https://peps.python.org/pep-0440/"
+      }
+    ],
+    "inspected_doc_ids": [
+      "pep-0386",
+      "pep-0440"
+    ],
+    "evidence_edges": [
+      {
+        "edge_id": "e1",
+        "source_doc_id": "pep-0386",
+        "target_doc_id": "pep-0440",
+        "relation": "superseded_by",
+        "origin": "source_header",
+        "target_in_corpus": true,
+        "supporting_evidence": [
+          {
+            "doc_id": "pep-0386",
+            "quote": "Superseded-By: 440",
+            "locator": "Header"
+          }
+        ],
+        "explanation": null,
+        "uncertainty": null
+      },
+      {
+        "edge_id": "e2",
+        "source_doc_id": "pep-0440",
+        "target_doc_id": "pep-0386",
+        "relation": "replaces",
+        "origin": "source_header",
+        "target_in_corpus": true,
+        "supporting_evidence": [
+          {
+            "doc_id": "pep-0440",
+            "quote": "Replaces: 386",
+            "locator": "Header"
+          }
+        ],
+        "explanation": null,
+        "uncertainty": null
+      }
+    ],
+    "as_of": "peps-c977468c8532",
+    "provenance": {
+      "mode_used": "LIVE",
+      "hydradb_requests": 2,
+      "hydradb_failures": 0,
+      "hydradb_evidence_doc_ids": [
+        "pep-0386",
+        "pep-0440"
+      ],
+      "model_requests": 1,
+      "model_failures": 0,
+      "model_completed": true
+    }
+  }
+]

@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "args": {
+      "additionalProperties": true,
+      "title": "Args",
+      "type": "object"
+    },
+    "call_id": {
+      "title": "Call Id",
+      "type": "string"
+    },
+    "fixture": {
+      "default": false,
+      "description": "True for recorded fixtures; the UI shows 'Mock data'",
+      "title": "Fixture",
+      "type": "boolean"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "seq": {
+      "description": "Strictly increasing within a request, starting at 0",
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "tool": {
+      "enum": [
+        "search_brain",
+        "get_decision",
+        "follow_edges",
+        "check_status",
+        "find_conflicts"
+      ],
+      "title": "Tool",
+      "type": "string"
+    },
+    "type": {
+      "const": "tool_started",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "seq",
+    "type",
+    "call_id",
+    "tool",
+    "args"
+  ],
+  "title": "ToolStarted",
+  "type": "object"
+}

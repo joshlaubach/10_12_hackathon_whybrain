@@ -1,0 +1,149 @@
+[
+  {
+    "request_id": "req-ask-563",
+    "seq": 0,
+    "fixture": true,
+    "type": "request_started",
+    "mode": "LOCAL",
+    "snapshot_id": "peps-c977468c8532"
+  },
+  {
+    "request_id": "req-ask-563",
+    "seq": 1,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "args": {
+      "query": "what replaced PEP 563"
+    }
+  },
+  {
+    "request_id": "req-ask-563",
+    "seq": 2,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "ok": true,
+    "summary": "PEP 563 top hit (local snapshot)",
+    "doc_ids": [
+      "pep-0563"
+    ]
+  },
+  {
+    "request_id": "req-ask-563",
+    "seq": 3,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-2",
+    "tool": "follow_edges",
+    "args": {
+      "doc_id": "pep-0563",
+      "relation": "superseded_by"
+    }
+  },
+  {
+    "request_id": "req-ask-563",
+    "seq": 4,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-2",
+    "tool": "follow_edges",
+    "ok": true,
+    "summary": "Successors: PEP 649 (in corpus), PEP 749 (not in corpus)",
+    "doc_ids": [
+      "pep-0649"
+    ]
+  },
+  {
+    "request_id": "req-ask-563",
+    "seq": 5,
+    "fixture": true,
+    "type": "answer_completed",
+    "answer": "PEP 563 is Superseded. Its Superseded-By header names PEP 649 and PEP 749. PEP 649 is in the corpus (Final, Replaces: 563); PEP 749 is not in this corpus snapshot, so nothing from it can be cited here.",
+    "abstained": false,
+    "abstain_reason": null,
+    "citations": [
+      {
+        "doc_id": "pep-0563",
+        "quote": "Superseded-By: 649, 749",
+        "locator": "Header",
+        "source_url": "https://peps.python.org/pep-0563/"
+      },
+      {
+        "doc_id": "pep-0649",
+        "quote": "Replaces: 563",
+        "locator": "Header",
+        "source_url": "https://peps.python.org/pep-0649/"
+      }
+    ],
+    "inspected_doc_ids": [
+      "pep-0563",
+      "pep-0649"
+    ],
+    "evidence_edges": [
+      {
+        "edge_id": "e1",
+        "source_doc_id": "pep-0563",
+        "target_doc_id": "pep-0649",
+        "relation": "superseded_by",
+        "origin": "source_header",
+        "target_in_corpus": true,
+        "supporting_evidence": [
+          {
+            "doc_id": "pep-0563",
+            "quote": "Superseded-By: 649, 749",
+            "locator": "Header"
+          }
+        ],
+        "explanation": null,
+        "uncertainty": null
+      },
+      {
+        "edge_id": "e2",
+        "source_doc_id": "pep-0563",
+        "target_doc_id": "pep-0749",
+        "relation": "superseded_by",
+        "origin": "source_header",
+        "target_in_corpus": false,
+        "supporting_evidence": [
+          {
+            "doc_id": "pep-0563",
+            "quote": "Superseded-By: 649, 749",
+            "locator": "Header"
+          }
+        ],
+        "explanation": null,
+        "uncertainty": null
+      },
+      {
+        "edge_id": "e3",
+        "source_doc_id": "pep-0649",
+        "target_doc_id": "pep-0563",
+        "relation": "replaces",
+        "origin": "source_header",
+        "target_in_corpus": true,
+        "supporting_evidence": [
+          {
+            "doc_id": "pep-0649",
+            "quote": "Replaces: 563",
+            "locator": "Header"
+          }
+        ],
+        "explanation": null,
+        "uncertainty": null
+      }
+    ],
+    "as_of": "peps-c977468c8532",
+    "provenance": {
+      "mode_used": "LOCAL",
+      "hydradb_requests": 0,
+      "hydradb_failures": 0,
+      "hydradb_evidence_doc_ids": [],
+      "model_requests": 1,
+      "model_failures": 0,
+      "model_completed": true
+    }
+  }
+]

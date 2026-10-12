@@ -1,0 +1,6 @@
+{
+  "code": "draft_conflict",
+  "message": "draft_id already exists with different content; save as a new draft.",
+  "request_id": null,
+  "retryable": false
+}

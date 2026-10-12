@@ -1,0 +1,24 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "mode_preference": {
+      "default": "AUTO",
+      "enum": [
+        "AUTO",
+        "REPLAY"
+      ],
+      "title": "Mode Preference",
+      "type": "string"
+    },
+    "proposal_text": {
+      "minLength": 1,
+      "title": "Proposal Text",
+      "type": "string"
+    }
+  },
+  "required": [
+    "proposal_text"
+  ],
+  "title": "ProposalReviewRequest",
+  "type": "object"
+}
