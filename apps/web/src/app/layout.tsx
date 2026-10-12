@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "Why Brain — Decision workspace",
+  title: "yBrain — Decision workspace",
   description: "Follow the evidence behind decisions, their replacements, and new proposals.",
 };
 
