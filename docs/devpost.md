@@ -2,7 +2,7 @@
 
 Edit before pasting, and refine after the demo so it matches what actually works. Every `[CONFIRM: ...]` below is a claim that is not true until it has been checked; replace or delete each one before the 10 pm final submission.
 
-**Title:** Why Brain
+**Title:** yBrain
 
 **Elevator pitch (200 characters max):** Ask “why did we decide that?” Get cited reasons, what replaced the decision, and a check of your new proposal against past decisions, so teams stop repeating or reversing old calls.
 
@@ -24,11 +24,11 @@ We wanted a company brain that does more than retrieve text. It should answer "w
 
 ## What it does
 
-You ask a question in plain language. An agent retrieves the relevant records from HydraDB, follows what superseded what using the links in the source headers, and answers with quoted citations and a small evidence graph. When the record cannot support an answer, it says so instead of guessing.
+yBrain (pronounced "why-brain") is a company brain for decision records. You ask a question in plain language. An agent retrieves the relevant records from HydraDB, follows what superseded what using the links in the source headers, and answers with quoted citations and a small evidence graph. When the record cannot support an answer, it says so instead of guessing.
 
 It keeps three things apart that most tools blur together: the status recorded in the source (Final, Superseded, Withdrawn), whether a newer record superseded it as of our corpus snapshot, and conflicts the model only inferred. If a successor is not in the corpus, the graph shows an explicit gap rather than hiding it.
 
-Then it takes action. Paste a new proposal and Why Brain lists the past decisions it may contradict, repeat, or suggest replacing, each with a quote, an explanation and an uncertainty, plus the recorded contacts from those sources (authors, not current owners). You can save the proposal as a draft labeled PROPOSAL. The draft goes into the brain separately from accepted decisions, is read back to confirm it landed, and never rewrites history.
+Then it takes action. Paste a new proposal and yBrain lists the past decisions it may contradict, repeat, or suggest replacing, each with a quote, an explanation and an uncertainty, plus the recorded contacts from those sources (authors, not current owners). You can save the proposal as a draft labeled PROPOSAL. The draft goes into the brain separately from accepted decisions, is read back to confirm it landed, and never rewrites history.
 
 The demo corpus is 24 public PEPs. The story: why was PEP 386 replaced by PEP 440, what would a proposal that reverts part of PEP 440 collide with, and what happens when we save it.
 
@@ -66,7 +66,7 @@ HydraDB features we use: document ingestion with asynchronous indexing (we poll 
 - "Saved" has to mean "we could read it back". A quote that appears in a source proves it was quoted accurately, not that it supports the conclusion; that still takes a human.
 - Parallel coding agents work when the contract and the file ownership are explicit before anyone starts.
 
-## What's next for WhyBrain
+## What's next for yBrain
 
 - Bring your own folder: upload ADRs, RFCs, meeting notes and tickets and build the graph from them.
 - Live connections to Slack, Notion, GitHub and Jira.
