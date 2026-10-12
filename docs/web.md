@@ -11,6 +11,43 @@ Without an API URL configured, the default is **Mock playback**, with a persiste
 
 To connect the backend, set only `NEXT_PUBLIC_API_URL=http://localhost:8000` in `apps/web/.env.local` (8001 for the Claude lane), restart Next. A configured URL starts in **Connected API**, with no initial fixture answer. Mock playback requires an explicit selection. The API base comes only from NEXT_PUBLIC_API_URL; selecting Connected API without it shows a configuration error. **API replay** explicitly sends `mode_preference: REPLAY`; Connected API sends AUTO. API failures never fall back to fixtures. Keys remain in the backend and are never loaded by this web app.
 
+## Separate café workspace (draft branch; do not merge before 4:30 PT)
+
+Leave the PEP demo checkout and server on :3100 → :8000 running unchanged. In a separate `codex/cafe-ui` worktree, install the existing lockfile with `npm ci` from `apps/web`, then run:
+
+```sh
+NEXT_PUBLIC_API_URL=http://localhost:8002 npx next dev --port 3000
+```
+
+Open http://localhost:3000. The café API must already be running separately on :8002 with `CORPUS=cafe`; the web app does not launch or reconfigure it. CORS permits http://localhost:3000 and http://localhost:3100. The command supplies the public API URL for this process without editing either setup's environment files. Restart Next after changing the URL; production builds also need the URL at build time.
+
+Corpus detection uses a `cafe-` health snapshot or `dr-` document IDs. The sidebar identifies Maple Street Café and **Fictional sample: Maple Street Café** stays beside the snapshot information in every view. The API does not provide a snapshot date, so this corpus displays **Date not provided by API** rather than inventing one. Titles, source URLs, counts, and verbatim statuses come from responses. Accepted DR-009 remains Accepted while its header relationship separately shows Superseded by DR-018; the same separation applies to Final PEP 333.
+
+Connected café questions and both proposal chips fill the relevant input only; submit explicitly to run a model request. PEP examples retain their existing text and behavior. Mock playback is intentionally PEP-only, always labeled Mock data. Café test responses live exclusively in `apps/web/tests/cafe-responses.ts`; they are not playback fixtures or shipped app data. The ordinary browser tests intercept the API and never create live drafts. Café mode hides API replay and shows **Replay recordings are unavailable for this corpus.** The note deliberately avoids PEP text on café screens. Café links say **source file** while preserving GitHub URLs supplied by the API. Answers, quotes, finding relations, explanations and draft prose are rendered unchanged; formatting applies only to IDs in UI-owned labels. Unrelated source-header edges returned by retrieval remain in the graph. The PEP-specific opt-in live smoke/browser scripts remain unchanged; live draft creation is still paused.
+
+Verified on `codex/cafe-ui`: clean `npm ci`, lint, type-check, production build, 20 unit tests, 30 intercepted/fixture Chromium tests, generated contract check, and 56 backend regression tests pass after pulling main through `fce3581` (contract changelog unchanged). Café answer, gap, Accepted/superseded, abstention and proposal screenshots were captured at 1440/390; desktop gap and mobile review were inspected. Browser cases assert no PEP/Python UI copy or input values after café loading, no café copy in the PEP path, response-supplied links/statuses, and no requests from café example chips. The browser gate used an isolated production server on :3103; the PEP demo server was left running unchanged. The original café pass used intercepted responses; a separate real café pass is documented below. No live drafts were created.
+
+## Read-only café browser check
+
+With the café API already running on http://localhost:8002 and port 3000 free, run `npm run test:cafe-live` from `apps/web`. Its dedicated config starts and stops a separate Next dev process on :3000 with NEXT_PUBLIC_API_URL set to :8002; it refuses to reuse an existing server. It does not start the API, change collections, read keys, or touch the PEP demo server. Keep the café PR draft and unmerged until Josh authorizes it after 4:30 PT.
+
+The opt-in harness uses real, un-intercepted health/list/ask/review responses. Draft endpoints are blocked, no Save control is clicked, and zero draft attempts are asserted. It verifies the refund's DR-014 citation and two-way header edges; weekday hours plus the DR-021 gap without a node; loyalty-owner abstention and Priya Nair under Recorded contacts; DR-009's Accepted status separately from its superseded-by-DR-018 relationship; both example proposals with exactly the finding labels returned by that run. Graph node IDs and every edge are compared to the response, so additional unrelated returned edges are displayed. Answer and draft text are compared verbatim, never normalized. Captures cover 1440/390 for all six responses; payloads/screenshots are saved under ignored `apps/web/test-results/cafe-live/`.
+
+Live café check passed on 2026-10-12 ~3:41 PT: `npm run test:cafe-live` completed in 36.8 seconds. All six terminal responses used LIVE provenance, fixture=false, and no Mock data appeared. There were no application console errors or draft attempts. Desktop hours/gap and mobile revert-review captures were inspected. Lint, type-check, production build, 20 unit tests, 30 fixture/intercepted browser tests and the unchanged generated contract check also pass. Brand rename PR17 and polish PR19 are already merged; the PEP server on :3100 stayed unchanged.
+
+| Real café flow | Result | Evidence |
+| --- | --- | --- |
+| Health/list and replay | PASS | Snapshot cafe-5ed395beac31; 9 documents, 7 source-header links, 1 missing successor; API replay hidden, explanatory note present, requests send AUTO. |
+| Refund | PASS | 4 citations including DR-014; DR-002 source status Superseded; DR-014 replaces DR-002 and DR-002 superseded_by DR-014; GitHub source-file link preserved. |
+| Opening hours | PASS | 3 citations; DR-005 → DR-016; DR-021 explicit gap, no node. All 5 returned edges drawn, including DR-009/DR-018 header edges. |
+| Loyalty owner | PASS | Abstained, zero citations; Priya Nair displayed under Recorded contacts from DR-011. |
+| Paper schedules | PASS | 6 citations; DR-009 source status Accepted remains verbatim while the separate header edge says Superseded by DR-018. |
+| Revert proposal | PASS | Model returned suggests_replacing and may_repeat, displayed without substituting may_contradict. All 3 returned edges and unchanged draft text rendered. |
+| Benign sign proposal | PASS | Model returned may_repeat; both returned historical edges displayed. Finding labels and draft text match the response. |
+| Draft indexing | NOT ATTEMPTED | Café collections are stalled; no Save clicks or draft requests. Draft endpoints are blocked in this harness. |
+
+These real responses differed from the isolated café vectors in citation counts, edge direction/count, additional inspected documents, and review finding relations. No UI normalization or relationship filtering was introduced. Café draft indexing remains unverified at Josh's direction; the web lane did not change provider state.
+
 ## Design and contract
 
 The workspace follows docs/design-reference/reference.png and the supplied tokens: Inter via next/font, a white navigation rail, a dark selected decision, and a pale workspace. Mock data uses a neutral dark outline. The header stat strip derives document count and snapshot id from /api/decisions, and source-header links/missing successors from /api/health. Counts remain response-derived; no gauges or fabricated metrics. Decision icon chips appear only for real recorded contacts, replaces, resolution and discussion fields. On narrow screens navigation becomes a top row and panels stack. Controls have visible focus and text labels; there is no decorative animation.
@@ -63,6 +100,10 @@ The dedicated polish browser test changes response counts and snapshot id and ve
 ## Requests
 
 Add one line per request for another owner (contract, backend, root config, docs). Claude reads this at each checkpoint, and sooner when something blocks you.
+
+- Café backend follow-up (planned, nonblocking): normalize document-ID spelling in generated prose upstream and filter unrelated retrieved header edges if desired. The real opening-hours response returned DR-009/DR-018 edges as well as the requested hours/gap edges; the UI deliberately displays all returned evidence_edges. Café draft saves remain paused because indexing for wb_cafe / wb_cafe_drafts is stalled; do not request live save retries without Josh authorizing them.
+
+- Optional backend metadata (not blocking): a future contract change could add `/api/health.corpus` identity metadata (`id`, `display_name`, `description`, `fictional`) alongside counts, avoiding snapshot/ID-prefix detection. Current café UI works with contract v1 and needs no backend change.
 
 - LIVE draft gate, same run, backend owner: draft `e29a595f-80fe-449d-bc3c-29a1ac27150b` returned 201/pending and remained `provider_indexing: pending`, `retrieval_verification: pending`, `verified_via: null` after 99 GET polls over two minutes, then became **failed** at the backend's 600-second limit with error "Timed out before the draft could be indexed and read back." `verified_via` stayed null. Please investigate provider ingestion/status; indexing is the sole exception to the accepted live pass. Do not ask the web lane to retry live draft creation until Josh authorizes it. Web verification is bounded to 60 seconds and exposes **Check draft status** to resume; live checks now stop before saving a draft, per Josh. Fixtures indexed after two reads and did not model this long delay. No provider state or keys were changed by the web lane.
 
