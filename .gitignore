@@ -8,3 +8,6 @@ __pycache__/
 node_modules/
 .next/
 .DS_Store
+
+scripts/.spike_out.json
+scripts/.ingest_state.json
