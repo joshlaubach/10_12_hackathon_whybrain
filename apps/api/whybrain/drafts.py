@@ -25,7 +25,7 @@ _guard = threading.Lock()
 
 
 def drafts_collection() -> str:
-    return os.environ.get("HYDRA_DRAFTS_COLLECTION", "wb_dev_drafts")
+    return os.environ.get("HYDRA_DRAFTS_COLLECTION", corpus.CFG["drafts_collection"])
 
 
 def store_dir() -> Path:

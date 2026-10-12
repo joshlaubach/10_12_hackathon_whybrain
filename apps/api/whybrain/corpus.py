@@ -1,9 +1,13 @@
 """Committed corpus snapshot: documents, sections and deterministic header edges.
 
-Supersession comes only from the source headers in data/peps (via manifest.json), never
+Supersession comes only from the source headers in the corpus (via manifest.json), never
 from the model or from HydraDB's extracted triplets.
+
+CORPUS=peps (default) or CORPUS=cafe selects the corpus at import. With no setting every value
+below is exactly what it was before CORPUS existed.
 """
 import json
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -12,20 +16,52 @@ from . import schemas as s
 from .quotes import norm
 
 ROOT = Path(__file__).resolve().parents[3]
-PEPS = ROOT / "data" / "peps"
-MAN = json.loads((PEPS / "manifest.json").read_text())
+
+CORPORA = {
+    "peps": dict(
+        name="peps", data_dir=ROOT / "data" / "peps", id_fmt="pep-{n:04d}", id_re=r"pep[-\s]?0*(\d{1,4})",
+        url_fmt="https://peps.python.org/pep-{n:04d}/", noun="a corpus of Python Enhancement Proposals",
+        accepted_collection="wb_demo", drafts_collection="wb_dev_drafts", sample_note=None),
+    "cafe": dict(
+        name="cafe", data_dir=ROOT / "data" / "cafe", id_fmt="dr-{n:03d}", id_re=r"\bdr[-\s]?0*(\d{1,3})\b",
+        url_fmt="https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-{n:03d}.txt",
+        noun="a log of decision records (DR) for Maple Street Café, a fictional sample café",
+        accepted_collection="wb_cafe", drafts_collection="wb_cafe_drafts",
+        sample_note="Maple Street Café is a fictional sample corpus."),
+}
+CFG = CORPORA[os.environ.get("CORPUS", "peps")]
+DATA_DIR = CFG["data_dir"]
+PEPS = DATA_DIR  # historical name
+MAN = json.loads((DATA_DIR / "manifest.json").read_text())
 SNAP = MAN["snapshot_id"]
 BY_ID = {d["doc_id"]: d for d in MAN["docs"]}
-URL = "https://peps.python.org/pep-{n:04d}/"
+ID_RE = re.compile(CFG["id_re"], re.I)
 
 
-def pep_url(doc_id: str) -> str:
-    return URL.format(n=int(doc_id.split("-")[1]))
+def doc_id_for(n: int) -> str:
+    return CFG["id_fmt"].format(n=n)
+
+
+def mentioned(text_: str) -> list[str]:
+    """Corpus doc ids named in free text (e.g. 'PEP 386', 'dr-14'), in order, without duplicates."""
+    return [d for d in dict.fromkeys(doc_id_for(int(n)) for n in ID_RE.findall(text_)) if d in BY_ID]
+
+
+def display(doc_id: str) -> str:
+    """Short human label: pep-0386 -> 'PEP 386' (legacy rule), dr-014 -> 'DR-014'."""
+    return doc_id.replace("pep-0", "PEP ") if CFG["name"] == "peps" else doc_id.upper()
+
+
+def source_url(doc_id: str) -> str:
+    return CFG["url_fmt"].format(n=int(doc_id.split("-")[1]))
+
+
+pep_url = source_url  # historical name
 
 
 @lru_cache(maxsize=None)
 def text(doc_id: str) -> str:
-    return (PEPS / BY_ID[doc_id]["file"]).read_text()
+    return (DATA_DIR / BY_ID[doc_id]["file"]).read_text()
 
 
 def ref(doc_id: str) -> s.DocRef:
