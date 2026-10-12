@@ -1,4 +1,4 @@
-# Why Brain: instructions for coding agents
+# yBrain: instructions for coding agents
 
 Answers "Why did we decide that?" from a decision graph (public PEPs stand in for a company's decision log), shows what superseded a decision with cited evidence, reviews a new proposal against that evidence, and saves it as a clearly labeled draft. Built for the Company Brain Hackathon (HydraDB + Anthropic Sonnet). Demo story: explain why PEP 386 was replaced -> review one proposal against PEP 440's rationale -> save a labeled draft -> retrieve it again.
 
@@ -33,7 +33,7 @@ No root package.json, no shared lockfile.
 - Authors are "recorded contacts", not current owners.
 - Quote verification (`whybrain/quotes.py`) checks accuracy only. Whether a quote supports the conclusion is Josh's judgement.
 - Modes: LIVE means HydraDB supplied evidence actually used in the response AND the model call completed. Failed or merely attempted calls do not qualify. LOCAL = committed snapshot + model; if the model fails return `model_unavailable`, never fall back silently. REPLAY = recorded playback, user-selected. The UI shows `provenance.mode_used`, never health config. Fixture/mock playback always shows a persistent "Mock data" badge, even if a fixture says LIVE.
-- Drafts: `status: indexed` only after provider indexing completed AND a retrieval of that `draft_id` read from the real store (HydraDB, or the explicit local store in LOCAL mode), not the cached save response. Keep indexing completion and retrieval verification as separate stages. Same `draft_id` + same `content_hash` returns the existing record; different content returns 409 `draft_conflict`; no update operation (editing means a new `draft_id`). Disable Save while pending.
+- Drafts: `status: indexed` only when (a) the provider reports the draft searchable (`completed`, or `graph_creation` while a query already returns it) AND (b) a retrieval of that `draft_id` read from the real store (HydraDB, or the explicit local store in LOCAL mode), not the cached save response. A provider failure is `failed`. Keep provider indexing and retrieval verification as separate stages. UI copy for an indexed draft: "searchable; graph enrichment may still be running". Same `draft_id` + same `content_hash` returns the existing record; different content returns 409 `draft_conflict`; no update operation (editing means a new `draft_id`). Disable Save while pending.
 - No fabricated metrics, invented confidence percentages, or decorative gauges. Show real counts and real eval results only.
 
 ## Streaming

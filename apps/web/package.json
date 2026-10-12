@@ -9,7 +9,10 @@
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "smoke:live": "tsx scripts/smoke-live.ts",
+    "test:live": "playwright test --config playwright.live.config.ts",
+    "test:cafe-live": "playwright test --config playwright.cafe-live.config.ts"
   },
   "dependencies": {
     "ajv": "^8.20.0",

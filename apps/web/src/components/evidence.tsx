@@ -10,7 +10,7 @@ import { ErrorNotice, SourceLink } from "./common";
 
 type Selection = { kind: "node"; id: string } | { kind: "edge"; edge: Schema<"EvidenceEdge"> } | { kind: "citation"; citation: Schema<"Citation"> };
 
-export function Evidence({ result, documents, transport }: { result: Terminal; documents: Schema<"Document">[]; transport: Transport }) {
+export function Evidence({ result, documents, transport, cafe = false }: { result: Terminal; documents: Schema<"Document">[]; transport: Transport; cafe?: boolean }) {
   const [selection, setSelection] = useState<Selection | null>(null);
   const [detail, setDetail] = useState<Schema<"DecisionDetail"> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -75,8 +75,8 @@ export function Evidence({ result, documents, transport }: { result: Terminal; d
       <div className="evidence-inspector" aria-live="polite">
         {!selection ? <div className="inspector-empty"><Link2 size={18} /><p>Select a citation, document, or relationship to inspect its source evidence.</p></div> : <>
           <h3>{selection.kind === "edge" ? relationLabel[selection.edge.relation] : selection.kind === "citation" ? `${docLabel(selection.citation.doc_id)} — ${selection.citation.locator}` : `${docLabel(selection.id)}${selectedDoc ? ` — ${selectedDoc.title}` : ""}`}</h3>
-          {selectedDoc && <div className="inspector-meta"><span>Source status: <strong>{selectedDoc.source_status}</strong></span><SourceLink url={selectedDoc.source_url}>Read source</SourceLink></div>}
-          {selection.kind === "citation" && <SourceLink url={selection.citation.source_url}>Read source</SourceLink>}
+          {selectedDoc && <div className="inspector-meta"><span>Source status: <strong>{selectedDoc.source_status}</strong></span><SourceLink url={selectedDoc.source_url}>{cafe ? "Read source file" : "Read source"}</SourceLink></div>}
+          {selection.kind === "citation" && <SourceLink url={selection.citation.source_url}>{cafe ? "Read source file" : "Read source"}</SourceLink>}
           {selection.kind === "edge" && <><p className="fine-print">Origin: {selection.edge.origin.replaceAll("_", " ")}{selection.edge.uncertainty ? ` · Uncertainty: ${selection.edge.uncertainty}` : ""}</p>{selection.edge.explanation && <p>{selection.edge.explanation}</p>}</>}
           {selection.kind === "node" && missing.has(selection.id) && <p className="gap-note">This successor is missing from the corpus snapshot. No quote or source content is available here.</p>}
           {selection.kind === "node" && selection.id === "proposal" && <p>This is a PROPOSAL under review. It is not an accepted decision.</p>}
