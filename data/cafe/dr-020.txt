@@ -1,0 +1,17 @@
+Title: Buy beans from Harbor Roasters
+Author: Maria Alvarez
+Status: Accepted
+Created: 2024-05-06
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+We needed a steady source of coffee beans that tasted the same from one week to the next. We tried samples from several roasters over a month, and staff tasted them without knowing which was which.
+
+Decision
+========
+Buy our house coffee beans from Harbor Roasters. Orders are placed weekly, and we keep one spare bag in the back. The tasting notes are kept in the shared folder so a future review can see what we compared.
+
+Why
+===
+Staff preferred the taste in the blind tasting, and the deliveries arrived when promised. A single supplier keeps ordering simple. We can change roaster later if the quality drops.

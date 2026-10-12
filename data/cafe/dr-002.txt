@@ -1,0 +1,18 @@
+Title: Refund policy v1
+Author: Maria Alvarez
+Status: Superseded
+Created: 2024-03-04
+Superseded-By: DR-014
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+Customers were asking for refunds on drinks and pastries with no limit. Some asked weeks after a visit, and staff had no shared rule to point to. Every request turned into a small negotiation at the counter, and the answer depended on who happened to be working that day.
+
+Decision
+========
+Refunds are allowed within 7 days, with a receipt. After 7 days, or without a receipt, the answer is no. Staff do not need to ask a manager for a refund inside the rule.
+
+Why
+===
+We needed a simple rule while we were small. A short window and a receipt were easy to explain and easy to check. We expected to revisit the rule once we knew how often people actually asked.

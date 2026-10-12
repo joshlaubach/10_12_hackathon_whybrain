@@ -1,11 +1,13 @@
-"""Ingest the committed PEP corpus into HydraDB (accepted decisions only; never drafts).
+"""Ingest the committed corpus into HydraDB (accepted decisions only; never drafts).
 
 Usage (repo root): uv run --project apps/api python scripts/ingest.py [--collection wb_demo] [--workers 4]
+CORPUS=cafe ingests data/cafe into wb_cafe instead (default CORPUS=peps, wb_demo).
 Idempotent: documents already indexed are skipped. Priority docs go first. Progress goes to
 scripts/.ingest_state.json. Indexing is asynchronous and slow (~1-2 min/doc), so run it early.
 """
 import argparse
 import json
+import os
 import sys
 import threading
 import time
@@ -15,21 +17,24 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "apps" / "api"))
 
+from whybrain import corpus  # noqa: E402
 from whybrain.hydra import Hydra, HydraError  # noqa: E402
 
-PRIORITY = ["pep-0386", "pep-0440", "pep-0563", "pep-0649", "pep-0333", "pep-3333", "pep-0291"]
-STATE = ROOT / "scripts" / ".ingest_state.json"
+PRIORITY = ["pep-0386", "pep-0440", "pep-0563", "pep-0649", "pep-0333", "pep-3333", "pep-0291",
+            "dr-014", "dr-002", "dr-016", "dr-005"]  # unknown ids for the other corpus are skipped
+STATE = ROOT / "scripts" / (".ingest_state.json" if corpus.CFG["name"] == "peps" else f".ingest_state_{corpus.CFG['name']}.json")
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--collection", default="wb_demo")
+    ap.add_argument("--collection", default=os.environ.get("HYDRA_ACCEPTED_COLLECTION", corpus.CFG["accepted_collection"]))
     ap.add_argument("--workers", type=int, default=4)
     a = ap.parse_args()
-    man = json.loads((ROOT / "data" / "peps" / "manifest.json").read_text())
-    docs = {d["doc_id"]: d for d in man["docs"]}
+    docs = corpus.BY_ID
     order = PRIORITY + sorted(set(docs) - set(PRIORITY))
     order = [d for d in order if d in docs]
+    if a.collection.startswith("wb_cafe") != (corpus.CFG["name"] == "cafe"):
+        sys.exit(f"refusing: corpus {corpus.CFG['name']} must not be ingested into collection {a.collection}")
     h = Hydra()
     state, lock, t0 = {}, threading.Lock(), time.time()
 
@@ -43,7 +48,7 @@ def main():
         try:
             if h.status(a.collection, doc) == "completed":
                 return log(doc, state="already_indexed")
-            h.ingest_text(a.collection, doc, (ROOT / "data" / "peps" / docs[doc]["file"]).read_text(),
+            h.ingest_text(a.collection, doc, (corpus.DATA_DIR / docs[doc]["file"]).read_text(),
                           {"title": docs[doc]["title"], "source_status": docs[doc]["source_status"]})
             log(doc, state="accepted")
             took = h.wait_indexed(a.collection, doc, timeout=1800)

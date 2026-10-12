@@ -1,0 +1,178 @@
+{
+ "snapshot_id": "cafe-5ed395beac31",
+ "source": "Maple Street Café: a FICTIONAL sample decision log (data/cafe)",
+ "fictional": true,
+ "fetched_at": "2026-10-12",
+ "review_status": "candidate",
+ "excluded_for_gap_demo": [
+  "dr-021"
+ ],
+ "missing_successors": [
+  {
+   "doc_id": "dr-005",
+   "missing_successor": "dr-021"
+  }
+ ],
+ "docs": [
+  {
+   "doc_id": "dr-002",
+   "num": 2,
+   "file": "dr-002.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-002.txt",
+   "title": "Refund policy v1",
+   "source_status": "Superseded",
+   "authors": [
+    "Maria Alvarez"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [
+    "dr-014"
+   ],
+   "sha256": "d7ea7e35a5af767dcdf2bf67bd0ae04c9bd1f2b9d6b324ee11d87c2c6b485182"
+  },
+  {
+   "doc_id": "dr-005",
+   "num": 5,
+   "file": "dr-005.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-005.txt",
+   "title": "Opening hours v1",
+   "source_status": "Superseded",
+   "authors": [
+    "Maria Alvarez"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [
+    "dr-016",
+    "dr-021"
+   ],
+   "sha256": "73c123dd00da977a331acd227a2558303feebfb2ed0b7913e1c8cb18c094e804"
+  },
+  {
+   "doc_id": "dr-007",
+   "num": 7,
+   "file": "dr-007.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-007.txt",
+   "title": "Switch to compostable cups",
+   "source_status": "Withdrawn",
+   "authors": [
+    "Sam Okafor"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [],
+   "sha256": "077b4f19019740f5621dc98610c104505a034b493a788727beee52e6830d0ff8"
+  },
+  {
+   "doc_id": "dr-009",
+   "num": 9,
+   "file": "dr-009.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-009.txt",
+   "title": "Weekly schedule on paper",
+   "source_status": "Accepted",
+   "authors": [
+    "Devon Park"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [
+    "dr-018"
+   ],
+   "sha256": "666e99e86310c986faef05855100312b4e31ac5845770e87ea71b0441b499e49"
+  },
+  {
+   "doc_id": "dr-011",
+   "num": 11,
+   "file": "dr-011.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-011.txt",
+   "title": "Loyalty program, tenth drink free",
+   "source_status": "Accepted",
+   "authors": [
+    "Priya Nair"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [],
+   "sha256": "ec8a03a624e8f0bb6891b1021420f25f36dae493a9c321c55d1c1855a17d12a9"
+  },
+  {
+   "doc_id": "dr-014",
+   "num": 14,
+   "file": "dr-014.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-014.txt",
+   "title": "Refund policy v2",
+   "source_status": "Accepted",
+   "authors": [
+    "Maria Alvarez",
+    "Devon Park"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [
+    "dr-002"
+   ],
+   "superseded_by": [],
+   "sha256": "b2aa1db66b5fb5faf9af3e43eb0e20927197c44cd94e181ba5b629ba4e16957f"
+  },
+  {
+   "doc_id": "dr-016",
+   "num": 16,
+   "file": "dr-016.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-016.txt",
+   "title": "Weekday hours",
+   "source_status": "Accepted",
+   "authors": [
+    "Maria Alvarez",
+    "Devon Park"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [
+    "dr-005"
+   ],
+   "superseded_by": [],
+   "sha256": "18e6e2f84120fbc025f9150e18c516415208638d26d966ff634f5c8d40b1f6f0"
+  },
+  {
+   "doc_id": "dr-018",
+   "num": 18,
+   "file": "dr-018.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-018.txt",
+   "title": "Schedules and shift swaps in the team chat",
+   "source_status": "Accepted",
+   "authors": [
+    "Devon Park",
+    "Sam Okafor"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [
+    "dr-009"
+   ],
+   "superseded_by": [],
+   "sha256": "5165e62555245bc46876926138af31f529b3cbaafd700ec1d82ac1e0054aae92"
+  },
+  {
+   "doc_id": "dr-020",
+   "num": 20,
+   "file": "dr-020.txt",
+   "source_url": "https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-020.txt",
+   "title": "Buy beans from Harbor Roasters",
+   "source_status": "Accepted",
+   "authors": [
+    "Maria Alvarez"
+   ],
+   "discussions_to": "#cafe-decisions (team chat)",
+   "resolution_url": null,
+   "replaces": [],
+   "superseded_by": [],
+   "sha256": "c6e6ff95bafeba20dd5cff7b90268df344cd57d2eb360a5edf04283d1c22f9df"
+  }
+ ]
+}
