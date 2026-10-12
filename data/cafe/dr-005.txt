@@ -1,0 +1,18 @@
+Title: Opening hours v1
+Author: Maria Alvarez
+Status: Superseded
+Created: 2024-03-11
+Superseded-By: DR-016, DR-021
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+When the café opened we did not know when customers would come, so we guessed. Neighbours asked for early coffee and for somewhere to sit in the evening. A single set of hours for every day also made the posted sign easy to keep right.
+
+Decision
+========
+The café is open from 7am to 9pm every day of the week. The same hours apply on weekends and public holidays.
+
+Why
+===
+We wanted to learn when people actually showed up, and being open long hours was the fastest way to find out. Keeping one schedule meant staff never had to wonder whether it was a short day.

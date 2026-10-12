@@ -1,0 +1,17 @@
+Title: Switch to compostable cups
+Author: Sam Okafor
+Status: Withdrawn
+Created: 2024-08-26
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+Customers had asked about the plastic-lined takeaway cups, and the team wanted a greener option. We found a compostable cup that looked like it would suit our drinks.
+
+Decision
+========
+Move all takeaway drinks to compostable cups as soon as the first order arrives. This proposal was withdrawn before it took effect and the café kept its existing cups.
+
+Why
+===
+The supplier could not deliver the cups in the quantity or on the schedule we needed. Without a reliable supply we would have run out mid-week. We chose to withdraw rather than switch back and forth. The idea can come back if a supplier is found who can deliver reliably.

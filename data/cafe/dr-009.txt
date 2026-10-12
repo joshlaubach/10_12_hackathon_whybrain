@@ -1,0 +1,18 @@
+Title: Weekly schedule on paper
+Author: Devon Park
+Status: Accepted
+Created: 2024-04-15
+Superseded-By: DR-018
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+Staff kept asking each other what shifts they were working that week. People checked in at different times and some only found out their hours on the day. We needed one place everyone looked.
+
+Decision
+========
+The weekly schedule is written on paper and posted by the staff door every Sunday. Anyone who needs a change speaks to the shift lead in person.
+
+Why
+===
+Paper is simple and does not need anyone to install anything. A posted sheet is hard to miss when you clock in. At our size, a conversation with the shift lead was enough to sort out a swap.

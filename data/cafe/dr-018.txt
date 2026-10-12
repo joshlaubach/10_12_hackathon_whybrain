@@ -1,0 +1,18 @@
+Title: Schedules and shift swaps in the team chat
+Author: Devon Park, Sam Okafor
+Status: Accepted
+Created: 2025-02-10
+Replaces: DR-009
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+The paper schedule broke down once the team grew and people worked different days. Swaps were agreed in the hallway and then forgotten, and the posted sheet was out of date by Tuesday.
+
+Decision
+========
+The schedule is posted in the team chat app, and shift swaps are agreed there too. A swap needs 24 hours' notice and a reply from the person taking the shift.
+
+Why
+===
+Everyone already has the chat on their phone, so a change is seen straight away and leaves a record. A written swap ends the argument about who agreed to what. The notice period gives the shift lead time to cover a gap.

@@ -1,0 +1,18 @@
+Title: Weekday hours
+Author: Maria Alvarez, Devon Park
+Status: Accepted
+Created: 2025-09-08
+Replaces: DR-005
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+After a year of open evenings we could see that weekday evenings were quiet while mornings were busy. Staff were closing late for very few customers, and the early shift was stretched thin.
+
+Decision
+========
+On weekdays the café is open from 7am to 6pm. Weekend hours are not changed by this decision.
+
+Why
+===
+Closing earlier on weekdays lets us staff the busy morning properly and send people home at a reasonable hour. The quiet evenings were not paying for the extra shift. We would rather serve fewer hours well than stretch a small team across all of them.

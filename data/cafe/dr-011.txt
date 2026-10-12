@@ -1,0 +1,17 @@
+Title: Loyalty program, tenth drink free
+Author: Priya Nair
+Status: Accepted
+Created: 2024-06-17
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+Regulars were asking whether there was any reward for coming in every day. Other cafés nearby gave out stamp cards, and we wanted a simple way to say thank you without complicated discounts.
+
+Decision
+========
+Customers earn a stamp for each drink they buy, and the tenth drink is free. Stamps are recorded on a small paper card kept by the customer.
+
+Why
+===
+A stamp card is cheap to run and easy for customers to understand. A free tenth drink rewards the people who come most often. We kept the rule simple so nobody has to work out a discount at the till.

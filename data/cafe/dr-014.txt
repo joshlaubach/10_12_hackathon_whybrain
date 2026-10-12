@@ -1,0 +1,18 @@
+Title: Refund policy v2
+Author: Maria Alvarez, Devon Park
+Status: Accepted
+Created: 2025-05-19
+Replaces: DR-002
+Discussions-To: #cafe-decisions (team chat)
+
+Context
+=======
+The 7-day, receipt-only rule from DR-002 was working on paper but not at the counter. Regular customers lose receipts all the time, and the shift lead was often pulled in to make exceptions. Staff felt awkward turning people away who they recognised.
+
+Decision
+========
+Refunds are allowed within 30 days, and no receipt is needed. Staff can look up the purchase by card or by the customer's phone number. A shift lead only gets involved if the purchase cannot be found.
+
+Why
+===
+Turning away a regular customer cost more than the refund, and the receipt rule was the thing staff argued about most. A longer window also matched how people actually shop here. Looking the purchase up keeps the check without making customers keep paper.
