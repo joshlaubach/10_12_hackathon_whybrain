@@ -23,9 +23,11 @@ export async function mockDetail(id: string): Promise<Schema<"DecisionDetail"> |
   const sections: Schema<"Section">[] = [];
   let heading = "Header";
   let start = 0;
+  const adornment = /^([=\-~^*+#])\1{2,}$/;
   for (let i = 1; i < lines.length; i++) {
-    if (/^([=\-~^])\1{2,}$/.test(lines[i]) && lines[i - 1].trim()) {
-      sections.push({ heading, locator: heading, text: lines.slice(start, i - 1).join("\n").trim() });
+    if (adornment.test(lines[i]) && lines[i - 1].trim() && !adornment.test(lines[i - 1])) {
+      const end = adornment.test(lines[i - 2] ?? "") ? i - 2 : i - 1;
+      sections.push({ heading, locator: heading, text: lines.slice(start, end).join("\n").trim() });
       heading = lines[i - 1].trim();
       start = i + 1;
     }
