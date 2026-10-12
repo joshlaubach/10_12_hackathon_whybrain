@@ -19,8 +19,8 @@ export function Evidence({ result, documents, transport }: { result: Terminal; d
   const generation = useRef(0);
   const lookup = (id: string) => documents.find(doc => doc.doc_id === id);
   const citations = result.type === "answer_completed" ? result.citations : result.findings;
-  const nodes = [...new Set([...result.inspected_doc_ids, ...result.evidence_edges.flatMap(edge => [edge.source_doc_id, edge.target_doc_id])])];
   const missing = new Set(result.evidence_edges.filter(edge => !edge.target_in_corpus).map(edge => edge.target_doc_id));
+  const nodes = [...new Set([...result.inspected_doc_ids, ...result.evidence_edges.flatMap(edge => edge.target_in_corpus ? [edge.source_doc_id, edge.target_doc_id] : [edge.source_doc_id])])].filter(id => !missing.has(id));
 
   async function selectNode(id: string) {
     const token = ++generation.current;
@@ -50,9 +50,9 @@ export function Evidence({ result, documents, transport }: { result: Terminal; d
 
   return <>
     {result.type === "answer_completed" && <section className="panel answer-panel" aria-labelledby="answer-title">
-      <div className="section-heading"><div><span className="section-icon"><BookOpen size={16} /></span><h2 id="answer-title">{result.abstained ? "Evidence is insufficient" : "What the evidence says"}</h2></div><span className="state-label">{result.citations.length} citations</span></div>
+      <div className="section-heading"><div><span className="section-icon"><BookOpen size={16} /></span><h2 id="answer-title">{result.abstained ? "I can't answer that from the record" : "What the evidence says"}</h2></div><span className="state-label">{result.citations.length} citations</span></div>
       <p className="answer-copy">{result.abstained ? result.abstain_reason : result.answer}</p>
-      <div className="citation-strip">{result.citations.map((citation, index) => <button key={`${citation.doc_id}-${index}`} className="citation-button" onClick={() => select({ kind: "citation", citation })} aria-pressed={selection?.kind === "citation" && selection.citation === citation}><span>{index + 1}</span>{docLabel(citation.doc_id)}<small>{citation.locator}</small></button>)}</div>
+      <div className="citation-strip">{(result.abstained ? [] : result.citations).map((citation, index) => <button key={`${citation.doc_id}-${index}`} className="citation-button" onClick={() => select({ kind: "citation", citation })} aria-pressed={selection?.kind === "citation" && selection.citation === citation}><span>{index + 1}</span>{docLabel(citation.doc_id)}<small>{citation.locator}</small></button>)}</div>
       <p className="fine-print">Conclusions apply as of corpus snapshot {result.as_of}.</p>
     </section>}
 
@@ -60,14 +60,14 @@ export function Evidence({ result, documents, transport }: { result: Terminal; d
       <div className="section-heading"><div><span className="section-icon"><GitBranch size={16} /></span><h2 id="graph-title">Follow the evidence</h2></div><span className="fine-print">{result.inspected_doc_ids.length} inspected documents</span></div>
       <div className="graph-nodes" role="group" aria-label="Evidence graph documents">{nodes.map(id => {
         const doc = lookup(id);
-        const gap = missing.has(id);
-        return <button key={id} className={`graph-node ${gap ? "gap" : ""} ${selection?.kind === "node" && selection.id === id ? "selected" : ""}`} onClick={() => void selectNode(id)} aria-pressed={selection?.kind === "node" && selection.id === id}>
-          <span className="node-id">{docLabel(id)}{gap && <AlertTriangle size={14} />}</span>
-          <span className="node-title">{gap ? "Missing from corpus" : doc?.title ?? (id === "proposal" ? "Under review" : "Referenced document")}</span>
-          <span className="node-status">{gap ? "Explicit evidence gap" : doc ? `Source status: ${doc.source_status}` : "PROPOSAL"}</span>
-          {!gap && doc && !result.inspected_doc_ids.includes(id) && <small>Referenced, not inspected in this response</small>}
+        return <button key={id} className={`graph-node ${selection?.kind === "node" && selection.id === id ? "selected" : ""}`} onClick={() => void selectNode(id)} aria-pressed={selection?.kind === "node" && selection.id === id}>
+          <span className="node-id">{docLabel(id)}</span>
+          <span className="node-title">{doc?.title ?? (id === "proposal" ? "Under review" : "Referenced document")}</span>
+          <span className="node-status">{doc ? `Source status: ${doc.source_status}` : id === "proposal" || id.startsWith("draft:") ? "PROPOSAL" : "Source metadata unavailable"}</span>
+          {doc && !result.inspected_doc_ids.includes(id) && <small>Referenced, not inspected in this response</small>}
         </button>;
       })}</div>
+      {!!missing.size && <div className="evidence-gaps" role="group" aria-label="Explicit evidence gaps">{[...missing].map(id => <button key={id} className="evidence-gap conflict" onClick={() => void selectNode(id)}><AlertTriangle size={14} /><strong>{docLabel(id)}</strong><span>Missing from corpus</span><span>Explicit evidence gap</span></button>)}</div>}
       <div className="relationship-groups">{groups.filter(group => group.edges.length).map(group => <div className="relationship-group" key={group.heading}><h3>{group.heading}</h3><p className="fine-print">{group.description}</p>{group.edges.map(edge => <button key={edge.edge_id} className={`edge-row ${edge.origin === "inferred" || !edge.target_in_corpus ? "conflict" : ""}`} onClick={() => select({ kind: "edge", edge })} aria-pressed={selection?.kind === "edge" && selection.edge.edge_id === edge.edge_id}>
         <span>{docLabel(edge.source_doc_id)}</span><ArrowRight size={16} /><span className="edge-label">{relationLabel[edge.relation]}</span><ArrowRight size={16} /><span>{docLabel(edge.target_doc_id)}</span>{!edge.target_in_corpus && <span className="state-label conflict">Missing from corpus</span>}
       </button>)}</div>)}</div>

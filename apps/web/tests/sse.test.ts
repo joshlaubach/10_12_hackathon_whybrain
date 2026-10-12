@@ -27,9 +27,9 @@ test("rejects duplicate or decreasing sequence numbers", async () => {
   const events = fixture.map(e => ({ ...e })); events[2].seq = events[1].seq;
   await assert.rejects(consumeSSE(response(events), () => {}, new AbortController().signal, "answer_completed"), { code: "stream_interrupted" });
 });
-test("strictly increasing sequence numbers may have gaps", async () => {
+test("rejects sequence gaps", async () => {
   const events = fixture.map((e, i) => ({ ...e, seq: i * 2 }));
-  await consumeSSE(response(events), () => {}, new AbortController().signal, "answer_completed");
+  await assert.rejects(consumeSSE(response(events), () => {}, new AbortController().signal, "answer_completed"), { code: "stream_interrupted" });
 });
 test("rejects mixed request IDs", async () => {
   const events = fixture.map(e => ({ ...e })); events[2].request_id = "other";

@@ -51,7 +51,7 @@ export async function consumeSSE(
     } else if (event.request_id !== requestId || event.type === "request_started") {
       throw interrupted("The stream changed request IDs or restarted mid-request.", requestId);
     }
-    if (!Number.isInteger(event.seq) || event.seq <= seq) throw interrupted("Stream sequence numbers are out of order.", requestId);
+    if (!Number.isInteger(event.seq) || event.seq !== seq + 1) throw interrupted("Stream sequence numbers have a gap or are out of order.", requestId);
     seq = event.seq;
     if (event.type === "answer_completed" || event.type === "review_completed" || event.type === "error") {
       if (event.type !== expected && event.type !== "error") throw interrupted("The stream returned the wrong terminal event.", requestId);

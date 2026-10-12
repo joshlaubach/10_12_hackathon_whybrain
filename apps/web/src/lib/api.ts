@@ -4,8 +4,9 @@ import { ApiError } from "./errors";
 import { checkResponse } from "./sse";
 import { validateDetail, validateDraft, validateHealth, validateList } from "./validation";
 
-export const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+export const apiBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/$/, "");
 export function endpoint(transport: Transport, path: string) {
+  if (transport === "api" && !apiBase) throw new ApiError({ code: "invalid_request", message: "Set NEXT_PUBLIC_API_URL and restart the web server before selecting Connected API.", request_id: null, retryable: false });
   return transport === "mock" ? `/api/mock/${path}` : `${apiBase}/api/${path}`;
 }
 

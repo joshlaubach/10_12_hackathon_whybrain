@@ -16,19 +16,20 @@ import { Proposal } from "./proposal";
 type View = "Decisions" | "Ask Why" | "Review Proposal" | "Evaluation";
 const navigation = [{ name: "Decisions", icon: Files }, { name: "Ask Why", icon: MessageCircle }, { name: "Review Proposal", icon: FilePenLine }, { name: "Evaluation", icon: ChartNoAxesColumn }] as const;
 
-export function Workspace({ initialList, initialHealth, initialAnswer, snapshotDate }: { initialList: Schema<"DecisionList">; initialHealth: Schema<"HealthResponse">; initialAnswer: Schema<"AnswerCompleted">; snapshotDate: string }) {
+export function Workspace({ initialList, initialHealth, initialAnswer, snapshotDate, configuredApi }: { initialList: Schema<"DecisionList">; initialHealth: Schema<"HealthResponse">; initialAnswer: Schema<"AnswerCompleted">; snapshotDate: string; configuredApi: boolean }) {
   const [view, setView] = useState<View>("Ask Why");
-  const [source, setSource] = useState("mock");
+  const [corpusVersion, setCorpusVersion] = useState(0);
+  const [source, setSource] = useState(configuredApi ? "api" : "mock");
   const transport: Transport = source === "mock" ? "mock" : "api";
   const mode_preference = source === "replay" ? "REPLAY" as const : "AUTO" as const;
-  const [list, setList] = useState<Schema<"DecisionList"> | null>(initialList);
-  const [health, setHealth] = useState<Schema<"HealthResponse"> | null>(initialHealth);
+  const [list, setList] = useState<Schema<"DecisionList"> | null>(configuredApi ? null : initialList);
+  const [health, setHealth] = useState<Schema<"HealthResponse"> | null>(configuredApi ? null : initialHealth);
   const [corpusError, setCorpusError] = useState<Schema<"ErrorBody"> | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(configuredApi);
   const [question, setQuestion] = useState<string>(scenarios[0].question);
   const [draftFixture, setDraftFixture] = useState(false);
   const [proposal, setProposal] = useState(exampleProposal);
-  const ask = useStream(initialAnswer);
+  const ask = useStream(configuredApi ? null : initialAnswer);
   const review = useStream(null);
   const corpusAbort = useRef<AbortController | null>(null);
   useEffect(() => () => corpusAbort.current?.abort(), []);
@@ -36,18 +37,23 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
   const mock = transport === "mock" || ask.fixture || review.fixture || draftFixture;
   const date = list?.snapshot_id === initialList.snapshot_id ? snapshotDate : "Date not provided by API";
 
-  async function changeSource(value: string) {
-    ask.reset(); review.reset(); setDraftFixture(false); setSource(value); setList(null); setHealth(null); setCorpusError(null); setLoading(true);
-    corpusAbort.current?.abort();
+  function changeSource(value: string) {
+    ask.reset(); review.reset(); setDraftFixture(false); setSource(value); setCorpusVersion(version => version + 1); setList(null); setHealth(null); setCorpusError(null); setLoading(true);
+  }
+
+  useEffect(() => {
     const abort = new AbortController(); corpusAbort.current = abort;
     const timeout = setTimeout(() => abort.abort(), 15000);
-    try {
-      const data = await loadCorpus(value === "mock" ? "mock" : "api", abort.signal);
-      if (corpusAbort.current === abort) { setList(data.list); setHealth(data.health); }
-    } catch (caught) {
+    void loadCorpus(source === "mock" ? "mock" : "api", abort.signal).then(data => {
+      if (!abort.signal.aborted) { setList(data.list); setHealth(data.health); }
+    }).catch(caught => {
       if (corpusAbort.current === abort) setCorpusError(errorBody(caught));
-    } finally { clearTimeout(timeout); if (corpusAbort.current === abort) setLoading(false); }
-  }
+    }).finally(() => {
+      clearTimeout(timeout);
+      if (corpusAbort.current === abort) setLoading(false);
+    });
+    return () => { corpusAbort.current = null; abort.abort(); clearTimeout(timeout); };
+  }, [source, corpusVersion]);
 
   function askQuestion(value = question) {
     setView("Ask Why"); setQuestion(value);

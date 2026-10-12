@@ -39,7 +39,7 @@ export function useStream(initial: Terminal | null) {
     } catch (caught) {
       if (controller.current !== abort) return;
       if (timedOut) setError({ code: "timeout", message: "The request took longer than 60 seconds. Try again.", retryable: true, request_id: null });
-      else if (abort.signal.aborted) setCancelled(true);
+      else if (abort.signal.aborted) { setCancelled(true); setEvents([]); }
       else setError(errorBody(caught));
     } finally {
       clearTimeout(timeout);
