@@ -1,7 +1,8 @@
 """Saved proposals. A draft never touches accepted documents, edges or statuses.
 
 Two stages are tracked separately and `status` is "indexed" only when both pass:
-  provider_indexing      provider (HydraDB) finished indexing, from the status endpoint
+  provider_indexing      provider (HydraDB) reports the draft searchable: status `completed`, or
+                         `graph_creation` AND a query already returns the draft
   retrieval_verification a query against the DRAFTS collection returned this draft_id from the real
                          store (HydraDB, or the explicit local store when no HydraDB key is configured);
                          the cached save response never counts.
@@ -20,6 +21,9 @@ from .hydra import Hydra, HydraError, load_env
 
 DRAFT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{8,64}$")
 INDEX_TIMEOUT_S = 600
+# Provider states at or past the point where content is searchable (graph enrichment may still run).
+# They only count once a query returns this draft_id; the state name alone never makes a draft indexed.
+SEARCHABLE_STATES = ("completed", "graph_creation")
 _locks: dict[str, threading.Lock] = {}
 _guard = threading.Lock()
 
@@ -103,10 +107,14 @@ def advance(draft_id: str) -> dict | None:
             if state["backend"] == "hydradb":
                 if rec["provider_indexing"] == "pending":
                     st = Hydra().status(drafts_collection(), rec["draft_id"])
+                    if st == "errored":
+                        return _set(state, provider_indexing="failed", error="HydraDB reported an indexing error.")
                     if st == "completed":
                         state = _set(state, provider_indexing="completed")
-                    elif st == "errored":
-                        return _set(state, provider_indexing="failed", error="HydraDB reported an indexing error.")
+                    elif st in SEARCHABLE_STATES and _hydra_verify(rec):
+                        # graph enrichment may still be running, but the store already returns this draft
+                        return _set(state, provider_indexing="completed", retrieval_verification="verified",
+                                    verified_via="hydradb")
                 rec = state["record"]
                 if rec["provider_indexing"] == "completed" and rec["retrieval_verification"] == "pending":
                     if _hydra_verify(rec):

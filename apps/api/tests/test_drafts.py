@@ -17,13 +17,14 @@ class FakeHydra:
     calls: list = []
     indexed = False      # provider finished indexing
     searchable = False   # retrieval returns the draft
+    state = "graph_creation"  # provider state reported while not completed
 
     def ingest_text(self, collection, doc_id, text, metadata=None):
         FakeHydra.calls.append(("ingest", collection, doc_id, text))
         return {"id": doc_id}
 
     def status(self, collection, doc_id):
-        return "completed" if FakeHydra.indexed else "graph_creation"
+        return "completed" if FakeHydra.indexed else FakeHydra.state
 
     def query(self, collections, query, max_results=8, graph=True):
         FakeHydra.calls.append(("query", tuple(collections)))
@@ -34,7 +35,7 @@ class FakeHydra:
 
 @pytest.fixture(autouse=True)
 def setup(monkeypatch, tmp_path):
-    FakeHydra.calls, FakeHydra.indexed, FakeHydra.searchable = [], False, False
+    FakeHydra.calls, FakeHydra.indexed, FakeHydra.searchable, FakeHydra.state = [], False, False, "graph_creation"
     monkeypatch.setenv("DRAFTS_DIR", str(tmp_path))
     monkeypatch.setenv("HYDRADB_API_KEY", "x")
     monkeypatch.setenv("HYDRA_DRAFTS_COLLECTION", "wb_test_drafts")
@@ -109,3 +110,21 @@ def test_local_mode_uses_the_explicit_local_store(monkeypatch):
     assert client.post("/api/drafts", json=BODY).status_code == 201
     g = s.DraftRecord(**client.get(f"/api/drafts/{BODY['draft_id']}").json())
     assert g.status == "indexed" and g.verified_via == "local_store"
+
+
+def test_searchable_during_graph_creation_counts_but_only_via_retrieval():
+    client.post("/api/drafts", json=BODY)
+    # graph_creation but the store does not return the draft yet: not indexed
+    g = client.get(f"/api/drafts/{BODY['draft_id']}").json()
+    assert (g["status"], g["provider_indexing"], g["retrieval_verification"]) == ("pending", "pending", "pending")
+    # still graph_creation, but a query now returns this draft_id: indexed, verified via the store
+    FakeHydra.searchable = True
+    g = s.DraftRecord(**client.get(f"/api/drafts/{BODY['draft_id']}").json())
+    assert (g.status, g.provider_indexing, g.retrieval_verification, g.verified_via) == (
+        "indexed", "completed", "verified", "hydradb")
+
+
+def test_a_queued_provider_state_is_not_searchable_even_if_a_query_matches():
+    FakeHydra.state, FakeHydra.searchable = "queued", True
+    client.post("/api/drafts", json=BODY)
+    assert client.get(f"/api/drafts/{BODY['draft_id']}").json()["status"] == "pending"
