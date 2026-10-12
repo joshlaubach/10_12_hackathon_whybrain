@@ -45,7 +45,7 @@ Requested `data/eval/results.json` shape (for a real runner): `{ "schema_version
 
 ## Pre-merge checklist evidence (2026-10-12)
 
-The final gate used a clean npm ci after merging origin/main (caf0ff9) into codex/ui, with the production web server at :3100 configured for localhost:8001. Baseline key names are unchanged from main and were explicitly allowed by Josh. Expected HTTP error diagnostics from error fixtures are separate from application console errors.
+The final gate used a clean npm ci after merging origin/main (16021f5; backend baseline caf0ff9) into codex/ui, with the production web server at :3100 configured for localhost:8001. Baseline key names are unchanged from main and were explicitly allowed by Josh. Expected HTTP error diagnostics from error fixtures are separate from application console errors.
 
 | Item | Pass/fail | Evidence |
 | --- | --- | --- |
