@@ -62,7 +62,7 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
 
   return <div className="app-shell">
     <a href="#workspace-content" className="skip-link">Skip to workspace</a>
-    <aside className="sidebar"><Link href="/" className="brand"><span className="brand-mark"><BrainCircuit size={24} strokeWidth={1.5} /></span><span>Why Brain<small>Decision workspace</small></span></Link>
+    <aside className="sidebar"><Link href="/" className="brand"><span className="brand-mark"><BrainCircuit size={24} strokeWidth={1.5} /></span><span>yBrain<small>Decision workspace</small></span></Link>
       <div className="workspace-name"><span className="workspace-avatar">Py</span><div>Python decisions<small>Public PEP corpus</small></div></div>
       <nav aria-label="Workspace navigation">{navigation.map(({ name, icon: Icon }) => <button key={name} className={view === name ? "active" : ""} onClick={() => setView(name)} aria-current={view === name ? "page" : undefined}><Icon size={18} strokeWidth={1.6} />{name}{view === name && <span className="nav-dot" />}</button>)}</nav>
       <div className="sidebar-note"><GitBranch size={20} strokeWidth={1.5} /><p>A decision is only part of the story.</p><small>Follow its sources, rationale, and replacements.</small></div>
