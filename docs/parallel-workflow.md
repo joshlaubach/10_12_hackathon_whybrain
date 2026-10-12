@@ -14,8 +14,9 @@ git fetch origin && git merge origin/main
 ```
 
 - Backend `.env` only in `../wb-claude`: `cp .env.example .env`, fill `HYDRADB_API_KEY` and `ANTHROPIC_API_KEY`. Do not put keys in `../wb-codex`.
-- `../wb-claude`: API on 8001 (`uv run --project apps/api uvicorn whybrain.main:app --port 8001`); integration/demo API on 8000 from `main`. `../wb-codex`: web on 3100 with `apps/web/.env.local` = `NEXT_PUBLIC_API_URL=http://localhost:8000` (or mock mode).
-- HydraDB collections: `wb_dev_claude` (dev), `wb_demo` (demo). Codex never calls HydraDB.
+- `../wb-claude`: dev API on 8001 (`PORT=8001 scripts/run_demo.sh`, or plain uvicorn with `HYDRA_DRAFTS_COLLECTION=wb_dev_drafts`); integration/demo API on 8000 from `main` (`scripts/run_demo.sh`). `../wb-codex`: web on 3100 with `apps/web/.env.local` = `NEXT_PUBLIC_API_URL=http://localhost:8000` (or mock mode).
+- HydraDB collections (database `default-tenant`): `wb_demo` holds the accepted PEPs (ingested once by `scripts/ingest.py`; also used for dev reads, never ingest twice), `wb_demo_drafts` holds demo drafts, `wb_dev_drafts` dev drafts. Drafts never go to the accepted collection. Codex never calls HydraDB.
+- **Demo API, one command** (repo root of the tree that holds `.env`): `scripts/run_demo.sh` serves on `http://127.0.0.1:8000` with `wb_demo`, `wb_demo_drafts` and CORS for `localhost:3000` and `localhost:3100`. Check with `curl localhost:8000/api/health`. Draft state lives in `.drafts/` of that tree, so restart from the same tree to keep saved drafts.
 - Codex CLI: workspace-write sandbox, approvals on request (check `codex --help` for current flag names).
 
 ## Handoffs and checkpoints
