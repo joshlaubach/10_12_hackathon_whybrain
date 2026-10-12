@@ -63,3 +63,12 @@ async def ask(body: s.AskRequest, request: Request):
     events = agent.ask(body.question, body.mode_preference)
     return StreamingResponse(sse(request, events), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@app.post("/api/proposals/review")
+async def review_proposal(body: s.ProposalReviewRequest, request: Request):
+    if len(body.proposal_text) > agent.MAX_PROPOSAL_CHARS:
+        return error(422, "invalid_request", f"proposal_text is limited to {agent.MAX_PROPOSAL_CHARS} characters")
+    events = agent.review(body.proposal_text, body.mode_preference)
+    return StreamingResponse(sse(request, events), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
