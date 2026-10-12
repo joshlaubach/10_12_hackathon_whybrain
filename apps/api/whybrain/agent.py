@@ -18,9 +18,8 @@ from .hydra import Hydra, HydraError, load_env
 from .quotes import norm, quote_in_source
 
 MAX_TOOL_CALLS = 6
-ACCEPTED_COLLECTION = os.environ.get("HYDRA_ACCEPTED_COLLECTION", "wb_demo")
+ACCEPTED_COLLECTION = os.environ.get("HYDRA_ACCEPTED_COLLECTION", corpus.CFG["accepted_collection"])
 EVENT = TypeAdapter(s.StreamEvent)
-DOC_RE = re.compile(r"pep[-\s]?0*(\d{1,4})", re.I)
 STOP = set("the a an of to in is was why what and or for did do does that this it be by on with as are how who".split())
 
 
@@ -31,8 +30,8 @@ class ToolLimit(Exception):
 # ---------- retrieval ----------
 
 def _doc_from_title(title: str) -> str | None:
-    m = DOC_RE.search(title or "")
-    d = f"pep-{int(m.group(1)):04d}" if m else None
+    m = corpus.ID_RE.search(title or "")
+    d = corpus.doc_id_for(int(m.group(1))) if m else None
     return d if d in corpus.BY_ID else None
 
 
@@ -53,7 +52,7 @@ def hydra_search(query: str) -> dict:
 
 def local_search(query: str) -> list[dict]:
     words = {w for w in re.findall(r"[a-z0-9]+", query.lower()) if w not in STOP and len(w) > 1}
-    named = {f"pep-{int(n):04d}" for n in DOC_RE.findall(query)}
+    named = set(corpus.mentioned(query))
     scored = []
     for doc in corpus.BY_ID:
         for sec in corpus.sections(doc):
@@ -72,7 +71,7 @@ def triplets_matching_headers(triplets: list[dict]) -> int:
 
     def doc(e: dict) -> str | None:
         m = re.search(r"\d{1,4}", str(e.get("identifier") or e.get("name") or ""))
-        return f"pep-{int(m.group()):04d}" if m else None
+        return corpus.doc_id_for(int(m.group())) if m else None
 
     for t in triplets:
         a, b = doc(t.get("source") or {}), doc(t.get("target") or {})
@@ -89,7 +88,7 @@ def triplets_matching_headers(triplets: list[dict]) -> int:
 # ---------- model ----------
 
 SYSTEM = (
-    "You answer questions about decisions in a corpus of Python Enhancement Proposals using ONLY the "
+    f"You answer questions about decisions in {corpus.CFG['noun']} using ONLY the "
     "passages provided. Reply with one JSON object and nothing else: "
     '{"supported": boolean, "answer": string|null, "citations": [{"doc_id": string, "quote": string}], '
     '"abstain_reason": string|null}. Rules: every quote must be copied verbatim (exact characters) from one '
@@ -148,8 +147,7 @@ class Run:
 
 
 def _focus_docs(question: str, retrieved: list[str]) -> list[str]:
-    named = [f"pep-{int(n):04d}" for n in DOC_RE.findall(question)]
-    named = [d for d in dict.fromkeys(named) if d in corpus.BY_ID]
+    named = corpus.mentioned(question)
     return (named or retrieved[:1])[:2]
 
 
@@ -183,6 +181,13 @@ def _retrieve(run: "Run", query: str, have_hydra: bool):
     return passages, hydra_ids, req, fail
 
 
+def _no_replay(run_mode: str = "REPLAY") -> Iterator[dict]:
+    run = Run("REPLAY")
+    yield run.emit(type="request_started", mode="REPLAY", snapshot_id=corpus.SNAP)
+    yield run.emit(type="error", code="invalid_request", retryable=False,
+                   message="REPLAY recordings exist only for the PEP corpus.")
+
+
 def replay(question: str) -> Iterator[dict]:
     """User-selected recorded playback: no HydraDB or model calls, labelled REPLAY and fixture=true."""
     q = question.lower()
@@ -200,7 +205,7 @@ def replay(question: str) -> Iterator[dict]:
 
 def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
     if mode_preference == "REPLAY":
-        yield from replay(question)
+        yield from (replay(question) if corpus.CFG["name"] == "peps" else _no_replay())
         return
     load_env()
     have_hydra, have_model = bool(os.environ.get("HYDRADB_API_KEY")), bool(os.environ.get("ANTHROPIC_API_KEY"))
@@ -213,7 +218,7 @@ def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
 
         # 2. deterministic supersession from the focus documents' own headers
         focus = _focus_docs(question, retrieved)
-        named = bool({f"pep-{int(n):04d}" for n in DOC_RE.findall(question)} & set(corpus.BY_ID))
+        named = bool(corpus.mentioned(question))
         inspected = [] if named else list(dict.fromkeys(retrieved[:4]))
         for doc in focus:
             if doc not in inspected:
@@ -256,7 +261,7 @@ def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
         for c in out.get("citations") or []:
             d, q = c.get("doc_id"), c.get("quote") or ""
             if d in inspected and quote_in_source(q, corpus.text(d)):
-                cits.append(s.Citation(doc_id=d, source_url=corpus.pep_url(d), quote=norm(q),
+                cits.append(s.Citation(doc_id=d, source_url=corpus.source_url(d), quote=norm(q),
                                        locator=corpus.locate(d, q)))
         supported = bool(out.get("supported")) and bool(out.get("answer")) and bool(cits)
         reason = None if supported else (out.get("abstain_reason") or "No verifiable passage supports an answer.")
@@ -295,7 +300,7 @@ def _search(question: str) -> tuple[str, list[str], Any]:
     r = hydra_search(question)
     ids = list(dict.fromkeys(p["doc_id"] for p in r["passages"]))
     n = len(r["triplets"])
-    top = f", top hit {ids[0].replace('pep-0', 'PEP ')}" if ids else ""
+    top = f", top hit {corpus.display(ids[0])}" if ids else ""
     return (f"HydraDB: {len(r['passages'])} passages{top}. HydraDB graph context: {n} triplets, "
             f"{triplets_matching_headers(r['triplets'])} match header edges (LLM-extracted, not used as authority)",
             ids, r)
@@ -351,15 +356,18 @@ def _draft_md(proposal: str, findings: list[s.ProposalFinding], contacts: list[s
     targets = sorted({f.doc_id for f in findings if f.relation == "suggests_replacing"})
     conflicts = [f for f in findings if f.relation == "may_contradict"]
     md = ["# Proposal draft", "", "Status: Draft (PROPOSAL, not accepted)"]
-    md.append("Proposes-To-Replace: " + (", ".join(t.replace("pep-0", "PEP ") for t in targets) + " (suggestion only)"
+    md.append("Proposes-To-Replace: " + (", ".join(corpus.display(t) for t in targets) + " (suggestion only)"
                                          if targets else "none"))
     md += ["", "## Summary", proposal.strip(), "", "## Conflicts found"]
-    md += [f"- {f.doc_id.replace('pep-0', 'PEP ')} ({f.locator}): {f.explanation}" for f in conflicts] or ["- none found"]
+    md += [f"- {corpus.display(f.doc_id)} ({f.locator}): {f.explanation}" for f in conflicts] or ["- none found"]
     md += ["", "## Recorded contacts"] + ([f"- {c}" for c in contacts] or ["- none"])
     return "\n".join(md) + "\n"
 
 
 def review(proposal: str, mode_preference: str = "AUTO") -> Iterator[dict]:
+    if mode_preference == "REPLAY" and corpus.CFG["name"] != "peps":
+        yield from _no_replay()
+        return
     if mode_preference == "REPLAY":
         for ev in json.loads((corpus.ROOT / "packages" / "contracts" / "fixtures"
                               / "stream_review_proposal.json").read_text()):
@@ -398,7 +406,7 @@ def review(proposal: str, mode_preference: str = "AUTO") -> Iterator[dict]:
                 if f["relation"] == "suggests_replacing" and corpus.BY_ID[d]["superseded_by"]:
                     f["relation"] = "may_repeat"  # a superseded decision is not replaced again
                 findings.append(s.ProposalFinding(
-                    finding_id=f"f{i}", claim=str(f.get("claim") or "")[:300], doc_id=d, source_url=corpus.pep_url(d),
+                    finding_id=f"f{i}", claim=str(f.get("claim") or "")[:300], doc_id=d, source_url=corpus.source_url(d),
                     quote=norm(q), locator=corpus.locate(d, q), relation=f["relation"],
                     explanation=str(f.get("explanation") or ""),
                     uncertainty=f.get("uncertainty") if f.get("uncertainty") in ("low", "medium", "high") else "medium"))
