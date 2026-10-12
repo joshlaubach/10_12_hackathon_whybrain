@@ -5,10 +5,10 @@ Newest first. Codex reads this file whenever it pulls. Format: date, commit, wha
 ## Ownership and handoff
 
 - Until the scaffold PR merges to `main`, the cloud Claude session owns the initial scaffold and contract (AGENTS.md, CLAUDE.md, root config, `apps/api/pyproject.toml`, `apps/api/whybrain/**`, `scripts/export_contract.py`, `scripts/make_fixtures.py`, `scripts/fetch_peps.py`, `data/peps/**`, `packages/contracts/**`, docs skeletons). Local Claude owns only `scripts/spike_hydra.py` until then.
-- **Ownership transfers to local Claude when the scaffold PR merges.** Scaffold PR: _link recorded below once opened_. A commit cannot contain its own hash, so the resolved merge commit is recorded afterwards in the first handoff commit on `main` (local Claude's first commit, or the cloud session's if it is quicker): replace the line "Merge commit: pending" below.
+- **Ownership transfers to local Claude when the scaffold PR merges.** Scaffold PR: see "Scaffold PR" below. A commit cannot contain its own hash, so the resolved merge commit is recorded afterwards in the first handoff commit on `main` (local Claude's first commit, or the cloud session's if it is quicker): replace the line "Merge commit: pending" below.
 - After transfer only local Claude changes the contract, in `contract:` commits. The cloud session stops editing `apps/api`, `scripts`, `packages/contracts` and `data/peps`; it keeps `docs/devpost.md` and README placeholders on request.
 
-Scaffold PR: pending
+Scaffold PR: https://github.com/joshlaubach/10_12_hackathon_whybrain/pull/2
 Merge commit: pending
 
 ## 2026-10-12: contract v1 (scaffold)
