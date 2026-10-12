@@ -47,7 +47,7 @@ export function Decisions({ documents, snapshot, transport, cafe = false }: { do
       </span>
     </button>)}</div>
     {!visible.length && <p className="empty-inline">No matching decisions. Try a title, {cafe ? "decision ID" : "PEP number"}, or source status.</p>}
-    {doc && <div className="decision-detail"><SourceLink url={doc.source_url}>{docLabel(doc.doc_id)} source</SourceLink><h3>Recorded contacts</h3><ul>{doc.authors.map(author => <li key={author}>{author}</li>)}</ul><button className="text-button" onClick={() => void read(doc.doc_id)} disabled={loading}><BookOpen size={14} />{loading ? "Loading sections…" : "Read source sections"}</button>
+    {doc && <div className="decision-detail"><SourceLink url={doc.source_url}>{docLabel(doc.doc_id)} {cafe ? "source file" : "source"}</SourceLink><h3>Recorded contacts</h3><ul>{doc.authors.map(author => <li key={author}>{author}</li>)}</ul><button className="text-button" onClick={() => void read(doc.doc_id)} disabled={loading}><BookOpen size={14} />{loading ? "Loading sections…" : "Read source sections"}</button>
       {error && <ErrorNotice error={error} />}
       {detail && <><label htmlFor="library-section" className="field-label">Source section</label><select id="library-section" value={section} onChange={e => setSection(Number(e.target.value))}>{detail.sections.map((value, i) => <option value={i} key={`${value.heading}-${i}`}>{value.heading}</option>)}</select><pre className="source-text">{detail.sections[section]?.text}</pre></>}
     </div>}

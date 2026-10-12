@@ -22,7 +22,6 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
   const [corpusVersion, setCorpusVersion] = useState(0);
   const [source, setSource] = useState(configuredApi ? "api" : "mock");
   const transport: Transport = source === "mock" ? "mock" : "api";
-  const mode_preference = source === "replay" ? "REPLAY" as const : "AUTO" as const;
   const [list, setList] = useState<Schema<"DecisionList"> | null>(configuredApi ? null : initialList);
   const [health, setHealth] = useState<Schema<"HealthResponse"> | null>(configuredApi ? null : initialHealth);
   const [corpusError, setCorpusError] = useState<Schema<"ErrorBody"> | null>(null);
@@ -37,9 +36,11 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
   const visible = view === "Review Proposal" ? review : ask;
   const mock = transport === "mock" || ask.fixture || review.fixture || draftFixture;
   const cafe = transport !== "mock" && isCafeCorpus(health, list);
+  const mode_preference = source === "replay" && !cafe ? "REPLAY" as const : "AUTO" as const;
   const date = list?.snapshot_id === initialList.snapshot_id ? snapshotDate : "Date not provided by API";
 
   function changeSource(value: string) {
+    if (cafe && value === "replay") return;
     ask.reset(); review.reset(); setDraftFixture(false); setSource(value); setCorpusVersion(version => version + 1); setList(null); setHealth(null); setCorpusError(null); setLoading(true);
   }
 
@@ -50,6 +51,7 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
       if (!abort.signal.aborted) {
         setList(data.list); setHealth(data.health);
         const nextCafe = source !== "mock" && isCafeCorpus(data.health, data.list);
+        if (nextCafe && source === "replay") setSource("api");
         const nextQuestion = nextCafe ? cafeQuestions[0] : scenarios[0].question;
         const nextProposal = nextCafe ? cafeProposals[0] : exampleProposal;
         // Change untouched example defaults with the corpus; retain the user's own text.
@@ -84,8 +86,9 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
         <div className="page-heading"><div><h1>{view === "Review Proposal" ? "Before the next decision." : view === "Evaluation" ? "Evidence, measured." : view === "Decisions" ? "The decision library." : "Why did we decide that?"}</h1><p>{view === "Review Proposal" ? "Review a proposal against the reasoning already on record." : view === "Evaluation" ? "Corpus facts and recorded evaluation results." : "Follow the sources. Understand the rationale. See what changed."}</p></div><div className="mode-controls">
           {mock && <span className="mock-badge">Mock data</span>}
           <span className="mode-indicator" role="status">{visible.terminal ? `${visible.fixture ? "Recorded " : ""}${visible.terminal.provenance.mode_used}` : "Awaiting response"}</span>
-          <label className="sr-only" htmlFor="data-source">Data source</label><select id="data-source" value={source} onChange={e => void changeSource(e.target.value)}><option value="mock">Mock playback</option><option value="api">Connected API</option><option value="replay">API replay</option></select>
+          <label className="sr-only" htmlFor="data-source">Data source</label><select id="data-source" value={source} onChange={e => void changeSource(e.target.value)}><option value="mock">Mock playback</option><option value="api">Connected API</option>{!cafe && <option value="replay">API replay</option>}</select>
         </div></div>
+        {cafe && <p className="fine-print replay-note">Replay recordings are unavailable for this corpus.</p>}
         {list && health && <section className="corpus-stat-strip" aria-label="Corpus statistics"><dl>
           <div><dt><Files size={14} aria-hidden="true" />Documents</dt><dd>{list.documents.length}</dd></div>
           <div><dt><Link2 size={14} aria-hidden="true" />Source-header links</dt><dd>{health.corpus.source_header_edges}</dd></div>
@@ -98,8 +101,8 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
         {view === "Evaluation" ? <section className="panel evaluation-panel"><h2>Corpus snapshot</h2>{health ? <dl className="corpus-counts"><div><dt>Documents</dt><dd>{health.corpus.documents}</dd></div><div><dt>Source-header edges</dt><dd>{health.corpus.source_header_edges}</dd></div><div><dt>Missing successors</dt><dd>{health.corpus.missing_successors}</dd></div></dl> : <p>Corpus counts are unavailable until the health endpoint responds.</p>}<p className="fine-print">{transport === "mock" ? "Counts from the committed /api/health fixture." : "Counts returned by /api/health."} {health?.snapshot_id}</p><div className="evaluation-empty"><ChartNoAxesColumn size={32} strokeWidth={1.2} /><h3>not run yet</h3><p>No evaluation results have been supplied. Results appear here only after a real evaluation run.</p></div></section> : view === "Review Proposal" ? <>
           <section className="panel proposal-input"><div className="section-heading"><h2>Review a proposal</h2><span className="state-label">PROPOSAL</span></div><label className="field-label" htmlFor="proposal">Proposed change</label><textarea id="proposal" value={proposal} onChange={e => setProposal(e.target.value)} rows={4} disabled={review.busy} />{cafe && source === "api" && <div className="example-questions"><span>Try a proposal</span>{cafeProposals.map(value => <button key={value} onClick={() => setProposal(value)} disabled={review.busy}>{value}<ArrowRight size={12} /></button>)}</div>}<div className="proposal-input-footer"><p className="fine-print">{transport === "mock" ? "Recorded example. Switch to Connected API to review your own text." : "A review suggests changes; it never changes accepted history."}</p><button className="primary-button" onClick={() => void review.run(transport, "review", { proposal_text: proposal.trim(), mode_preference })} disabled={review.busy || !proposal.trim()}>Review proposal<ArrowRight size={15} /></button></div></section>
           <StreamProgress stream={review} />
-        </> : <div className="workspace-columns">{list && <Decisions key={`${transport}-${list.snapshot_id}`} documents={list.documents} snapshot={list.snapshot_id} transport={transport} cafe={cafe} />}<div className="evidence-column"><StreamProgress stream={ask} />{ask.terminal && <Evidence key={ask.terminal.request_id} result={ask.terminal} documents={list?.documents ?? []} transport={transport} />}{!ask.terminal && !ask.busy && !ask.error && <section className="panel empty-evidence"><BookEmpty /><h2>Start with a question</h2><p>Choose an example or ask about a decision. Its evidence and relationships will appear here.</p></section>}</div></div>}
-        {review.terminal?.type === "review_completed" && <div hidden={view !== "Review Proposal"}><Proposal key={`${transport}-${review.terminal.request_id}`} result={review.terminal} documents={list?.documents ?? []} transport={transport} onFixture={setDraftFixture} /></div>}
+        </> : <div className="workspace-columns">{list && <Decisions key={`${transport}-${list.snapshot_id}`} documents={list.documents} snapshot={list.snapshot_id} transport={transport} cafe={cafe} />}<div className="evidence-column"><StreamProgress stream={ask} />{ask.terminal && <Evidence key={ask.terminal.request_id} result={ask.terminal} documents={list?.documents ?? []} transport={transport} cafe={cafe} />}{!ask.terminal && !ask.busy && !ask.error && <section className="panel empty-evidence"><BookEmpty /><h2>Start with a question</h2><p>Choose an example or ask about a decision. Its evidence and relationships will appear here.</p></section>}</div></div>}
+        {review.terminal?.type === "review_completed" && <div hidden={view !== "Review Proposal"}><Proposal key={`${transport}-${review.terminal.request_id}`} result={review.terminal} documents={list?.documents ?? []} transport={transport} cafe={cafe} onFixture={setDraftFixture} /></div>}
         <footer className="workspace-footer"><span>{cafe ? "Maple Street Café — fictional sample" : "Python Enhancement Proposals"}</span><span>{list?.snapshot_id ?? "Corpus unavailable"}</span><span>Statuses are recorded as of the snapshot.</span></footer>
       </div>
     </main>

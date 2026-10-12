@@ -197,3 +197,5 @@ figcaption { color: var(--secondary); font-size: 10px; margin: 7px 0 0 16px; }
 .evidence-gaps { margin-top: 16px; display: grid; gap: 8px; }
 .evidence-gap { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; text-align: left; border: 1px dashed var(--conflict); border-radius: 6px; padding: 12px; background: var(--conflict-wash); font-size: 11px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+.replay-note { margin: -16px 0 20px; }

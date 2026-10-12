@@ -31,6 +31,8 @@ async function loadCafe(page: Page) {
   await expect(page.getByText("Fictional sample: Maple Street Café", { exact: true })).toBeVisible();
   await expect(page.getByLabel("Data source")).toHaveValue("api");
   await expect(page.getByText("Mock data", { exact: true })).not.toBeVisible();
+  await expect(page.getByLabel("Data source").locator('option[value="replay"]')).toHaveCount(0);
+  await expect(page.getByText("Replay recordings are unavailable for this corpus.", { exact: true })).toBeVisible();
   await noPep(page);
 }
 
@@ -64,7 +66,8 @@ for (const width of [1440, 390]) test(`café answer, examples, statuses, gap, ab
   await expect(page.locator(".edge-row")).toHaveCount(cafeAnswer.evidence_edges.length);
   await page.getByRole("button", { name: "2 DR-014 Decision", exact: true }).click();
   await expect(page.getByRole("blockquote")).toHaveText(refundQuote);
-  await expect(page.locator(".evidence-inspector a")).toHaveAttribute("href", sourceUrl("dr-014"));
+  await expect(page.getByRole("link", { name: "Read source file", exact: true })).toHaveAttribute("href", sourceUrl("dr-014"));
+  await expect(page.getByRole("link", { name: "DR-002 source file", exact: true })).toHaveAttribute("href", sourceUrl("dr-002"));
   await page.getByRole("button", { name: "DR-002 Superseded by DR-014", exact: true }).click();
   await expect(page.getByRole("blockquote")).toHaveText("Superseded-By: DR-014");
   await noPep(page);
@@ -152,6 +155,9 @@ test("PEP connected text and examples stay unchanged; Final PEP 333 can be super
   await page.goto("/");
   await expect(page.locator(".library-heading")).toContainText("24");
   await expect(page.locator(".workspace-name")).toHaveText("PyPython decisionsPublic PEP corpus");
+  await expect(page.getByLabel("Data source").locator('option[value="replay"]')).toHaveCount(1);
+  await expect(page.getByText("Replay recordings are unavailable for this corpus.", { exact: true })).not.toBeVisible();
+  await expect(page.getByRole("link", { name: "PEP 386 source", exact: true })).toBeVisible();
   await expect(page.getByLabel("Ask a question", { exact: true })).toHaveValue("Why was PEP 386 replaced by PEP 440?");
   const card = page.locator(".decision-card").filter({ has: page.getByText("PEP 333", { exact: true }) });
   await expect(card.locator(".decision-status")).toHaveText("Source status: Final");
@@ -172,5 +178,27 @@ test("health-only café detection keeps an empty corpus free of PEP labels", asy
   await loadCafe(page);
   await expect(page.locator(".decision-card")).toHaveCount(0);
   await expect(page.getByText("No matching decisions. Try a title, decision ID, or source status.")).toBeVisible();
+  await noPep(page);
+});
+
+test("café answer prose and finding relations are rendered verbatim; unrelated returned header edges remain", async ({ page }) => {
+  const api = await interceptCafe(page);
+  await loadCafe(page);
+  const answer = { ...cafeGap, answer: "dr-016 says weekday hours end at 6pm. dr-009 is also in the retrieval.",
+    inspected_doc_ids: [...cafeGap.inspected_doc_ids, ...cafeSchedule.inspected_doc_ids],
+    evidence_edges: [...cafeGap.evidence_edges, ...cafeSchedule.evidence_edges] };
+  api.setResult(answer);
+  await page.getByRole("button", { name: "Ask why", exact: true }).click();
+  await expect(page.locator(".answer-copy")).toHaveText(answer.answer);
+  await expect(page.locator(".graph-node")).toHaveCount(4);
+  await expect(page.getByRole("button", { name: "DR-009 Superseded by DR-018", exact: true })).toBeVisible();
+  await expect(page.locator(".graph-node").filter({ hasText: "DR-021" })).toHaveCount(0);
+  const review = { ...cafeReview, findings: [cafeReview.findings[0], { ...cafeReview.findings[0], finding_id: "repeat", relation: "may_repeat" as const }] };
+  await page.route(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8001"}/api/proposals/review`, route => route.fulfill({ headers: { "Access-Control-Allow-Origin": "*" }, contentType: "text/event-stream", body: stream(review).map(event => `data: ${JSON.stringify(event)}\n\n`).join("") }));
+  await page.getByRole("button", { name: "Review Proposal", exact: true }).click();
+  await page.getByRole("button", { name: "Review proposal", exact: true }).click();
+  await expect(page.locator(".finding-heading .state-label")).toHaveText(["Suggested replacement (not an accepted change)", "May repeat"]);
+  await expect(page.locator(".finding-heading .state-label").filter({ hasText: "May contradict" })).toHaveCount(0);
+  await expect(page.locator(".findings-panel .source-link").first()).toContainText("source file");
   await noPep(page);
 });
