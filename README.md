@@ -4,9 +4,9 @@
 
 yBrain (pronounced why-brain) is an AI assistant that answers one of the hardest questions at work: *"Why did we decide that?"* It connects your decisions, discussions, and owners, then shows you the full story behind every answer.
 
-![yBrain: a LIVE PEP 386 answer with citations and source-header relationships](apps/web/public/screenshots/pep-386-live.png)
+![yBrain answering "Why was PEP 386 replaced by PEP 440?" from the live API, with citations and the source-header chain](docs/screenshot.png)
 
-[Follow the demo walkthrough](docs/demo-script.md) · [Run locally](#quick-start)
+[Follow the demo walkthrough](docs/demo-script.md) · [Run it locally](#quick-start). Demo video will be linked after recording.
 
 ---
 
@@ -87,9 +87,9 @@ The fictional Maple Street Café corpus uses a separate API process on :8002 and
 ## Built with
 
 - [HydraDB](https://hydradb.com) for memory, knowledge graph, and retrieval
-- Next.js App Router and TypeScript for the web app
-- Python and FastAPI for the backend
-- React for the interface and visualizations
+- [Anthropic Claude](https://www.anthropic.com) (Sonnet) for the agent that composes cited answers
+- Python, FastAPI and Pydantic for the backend and the API contract
+- Next.js, React and TypeScript for the interface
 
 ## What's next
 
@@ -101,7 +101,7 @@ The fictional Maple Street Café corpus uses a separate API process on :8002 and
 
 yBrain was created for the Company Brain Hackathon.
 
-Built by [Josh Laubach](https://github.com/joshlaubach), with Claude Code and Codex.
+Built by [Josh Laubach](https://github.com/joshlaubach).
 
 ## License
 
