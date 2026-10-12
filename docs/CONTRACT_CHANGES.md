@@ -9,7 +9,8 @@ Newest first. Codex reads this file whenever it pulls. Format: date, commit, wha
 - After transfer only local Claude changes the contract, in `contract:` commits. The cloud session stops editing `apps/api`, `scripts`, `packages/contracts` and `data/peps`; it keeps `docs/devpost.md` and README placeholders on request.
 
 Scaffold PR: https://github.com/joshlaubach/10_12_hackathon_whybrain/pull/2
-Merge commit: pending
+Merge commit: d4704a422d0eaceb14e69c3cf3416e0a3433fad3 (merged 2026-10-12 13:35 PT)
+Ownership: transferred to local Claude as of that merge. The cloud session no longer edits apps/api, scripts, packages/contracts or data/peps.
 
 ## 2026-10-12: contract v1 (scaffold)
 
