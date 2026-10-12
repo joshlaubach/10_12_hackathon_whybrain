@@ -185,3 +185,21 @@ def test_replacing_a_superseded_decision_is_downgraded(monkeypatch):
     r = review()[-1]
     assert [f.relation for f in r.findings] == ["may_repeat"]
     assert not any(e.relation == "proposes_to_replace" for e in r.evidence_edges)
+
+
+def test_tidy_limits_edges_to_cited_documents_and_normalises_ids(monkeypatch):
+    two = lambda q: passages("pep-0386", "pep-0563")  # noqa: E731
+    monkeypatch.setattr(agent, "hydra_search", two)
+    monkeypatch.setattr(agent, "call_model", fake_model(answer="pep-0386 is Superseded by pep-0440."))
+    plain = run("Which proposals were superseded?")[-1]
+    assert {e.source_doc_id for e in plain.evidence_edges} >= {"pep-0563"} and "pep-0386 is" in plain.answer
+    monkeypatch.setitem(corpus.CFG, "tidy", True)
+    tidy = run("Which proposals were superseded?")[-1]
+    assert {e.source_doc_id for e in tidy.evidence_edges} | {e.target_doc_id for e in tidy.evidence_edges} == {
+        "pep-0386", "pep-0440"}
+    assert tidy.answer == "PEP 386 is Superseded by PEP 440."
+
+
+def test_review_nudge_is_cafe_only_and_peps_prompt_unchanged():
+    assert corpus.CFG["review_nudge"] == "" and "reverses the stated rationale" not in agent.REVIEW_SYSTEM
+    assert "reverses the stated rationale" in corpus.CORPORA["cafe"]["review_nudge"]
