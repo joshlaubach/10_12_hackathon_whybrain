@@ -123,3 +123,65 @@ def test_replay_is_labelled_and_makes_no_calls(monkeypatch):
     monkeypatch.setattr(agent, "hydra_search", lambda q: pytest.fail("no HydraDB in REPLAY"))
     evs = run(mode_preference="REPLAY")
     assert evs[0].mode == "REPLAY" and evs[-1].provenance.mode_used == "REPLAY"
+
+
+PROPOSAL = ("Sort development releases such as 1.0.dev1 between the last release candidate and the final "
+            "release, so that dev builds sort after rc builds.")
+QUOTE = ("This is a far more logical sort order, as projects already using both development releases and "
+         "alphas/betas/release candidates do not want their developmental releases sorted in between their "
+         "release candidates and their final releases.")
+
+
+def review(**kw):
+    r = client.post("/api/proposals/review", json={"proposal_text": PROPOSAL, **kw})
+    assert r.status_code == 200
+    evs = [EVENTS.validate_python(json.loads(c[6:])) for c in r.text.split("\n\n") if c.startswith("data: ")]
+    assert [e.seq for e in evs] == list(range(len(evs)))
+    assert sum(e.type in s.TERMINAL_TYPES for e in evs) == 1 and evs[-1].type in s.TERMINAL_TYPES
+    return evs
+
+
+def fake_review(findings):
+    return lambda proposal, facts, p: {"findings": findings}
+
+
+def test_review_findings_edges_and_authority(monkeypatch):
+    monkeypatch.setattr(agent, "hydra_search", lambda q: passages("pep-0440"))
+    monkeypatch.setattr(agent, "call_review_model", fake_review([
+        {"claim": "dev after rc", "doc_id": "pep-0440", "quote": QUOTE, "relation": "may_contradict",
+         "explanation": "PEP 440 sorts dev releases first.", "uncertainty": "low"},
+        {"claim": "dev after rc", "doc_id": "pep-0440", "quote": QUOTE, "relation": "suggests_replacing",
+         "explanation": "Would replace PEP 440's sort order.", "uncertainty": "low"},
+        {"claim": "x", "doc_id": "pep-0440", "quote": "made up quote", "relation": "may_repeat",
+         "explanation": "x", "uncertainty": "low"}]))
+    r = review()[-1]
+    assert r.type == "review_completed" and len(r.findings) == 2  # fabricated quote rejected
+    rels = {(e.relation, e.origin) for e in r.evidence_edges}
+    assert ("potential_conflict", "inferred") in rels and ("proposes_to_replace", "proposal") in rels
+    assert not any(e.origin == "proposal" and e.relation in ("replaces", "superseded_by") for e in r.evidence_edges)
+    assert r.provenance.mode_used == "LIVE" and r.recorded_contacts
+    assert "PROPOSAL" in r.draft_md and "not accepted" in r.draft_md
+
+
+def test_review_model_failure_is_an_error(monkeypatch):
+    monkeypatch.setattr(agent, "hydra_search", lambda q: passages("pep-0440"))
+    def boom(*a):
+        raise RuntimeError("down")
+    monkeypatch.setattr(agent, "call_review_model", boom)
+    e = review()[-1]
+    assert e.type == "error" and e.code == "model_unavailable"
+
+
+def test_review_is_bounded():
+    r = client.post("/api/proposals/review", json={"proposal_text": "x" * 2001})
+    assert r.status_code == 422 and r.json()["code"] == "invalid_request"
+
+
+def test_replacing_a_superseded_decision_is_downgraded(monkeypatch):
+    monkeypatch.setattr(agent, "hydra_search", lambda q: passages("pep-0386"))
+    monkeypatch.setattr(agent, "call_review_model", fake_review([
+        {"claim": "c", "doc_id": "pep-0386", "quote": "Superseded-By: 440", "relation": "suggests_replacing",
+         "explanation": "e", "uncertainty": "low"}]))
+    r = review()[-1]
+    assert [f.relation for f in r.findings] == ["may_repeat"]
+    assert not any(e.relation == "proposes_to_replace" for e in r.evidence_edges)

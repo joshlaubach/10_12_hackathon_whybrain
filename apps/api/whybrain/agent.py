@@ -163,6 +163,26 @@ def _facts(docs: list[str]) -> str:
     return "\n".join(out)
 
 
+def _retrieve(run: "Run", query: str, have_hydra: bool):
+    """HydraDB first; local snapshot search when HydraDB is unavailable or returns nothing.
+    Returns (passages, hydra_doc_ids, hydradb_requests, hydradb_failures)."""
+    passages, hydra_ids, req, fail = [], set(), 0, 0
+    if have_hydra:
+        req += 1
+        for ev in run.tool("search_brain", {"query": query}, lambda: _search(query)):
+            yield ev
+        if isinstance(run.result, Exception):
+            fail += 1
+        else:
+            passages = run.result["passages"]
+            hydra_ids = {p["doc_id"] for p in passages}
+    if not passages:
+        for ev in run.tool("search_brain", {"query": query, "source": "local_snapshot"}, lambda: _local(query)):
+            yield ev
+        passages = [] if isinstance(run.result, Exception) else run.result
+    return passages, hydra_ids, req, fail
+
+
 def replay(question: str) -> Iterator[dict]:
     """User-selected recorded playback: no HydraDB or model calls, labelled REPLAY and fixture=true."""
     q = question.lower()
@@ -186,26 +206,9 @@ def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
     have_hydra, have_model = bool(os.environ.get("HYDRADB_API_KEY")), bool(os.environ.get("ANTHROPIC_API_KEY"))
     run = Run("LIVE" if have_hydra and have_model else "LOCAL")
     yield run.emit(type="request_started", mode=run.mode, snapshot_id=corpus.SNAP)
-    hdb_req = hdb_fail = 0
     try:
         # 1. retrieval: HydraDB first; local snapshot search if it is unavailable or empty
-        hydra_ids: set[str] = set()
-        triplets: list[dict] = []
-        passages: list[dict] = []
-        if have_hydra:
-            hdb_req += 1
-            for ev in run.tool("search_brain", {"query": question}, lambda: _search(question)):
-                yield ev
-            if isinstance(run.result, Exception):
-                hdb_fail += 1
-            else:
-                passages, triplets = run.result["passages"], run.result["triplets"]
-                hydra_ids = {p["doc_id"] for p in passages}
-        if not passages:
-            for ev in run.tool("search_brain", {"query": question, "source": "local_snapshot"},
-                               lambda: _local(question)):
-                yield ev
-            passages = [] if isinstance(run.result, Exception) else run.result
+        passages, hydra_ids, hdb_req, hdb_fail = yield from _retrieve(run, question, have_hydra)
         retrieved = list(dict.fromkeys(p["doc_id"] for p in passages))
 
         # 2. deterministic supersession from the focus documents' own headers
@@ -310,3 +313,132 @@ def _follow(doc: str, succ: list[str]) -> tuple[str, list[str], Any]:
     gaps = [t for t in succ if t not in corpus.BY_ID]
     msg = ", ".join(f"{t} ({'in corpus' if t in corpus.BY_ID else 'not in corpus'})" for t in succ)
     return f"{doc} superseded by {msg}", [t for t in succ if t in corpus.BY_ID], gaps
+
+# ---------- proposal review (bounded: one proposal text, at most 3 retrieved decisions) ----------
+
+MAX_PROPOSAL_CHARS = 2000
+REVIEW_SYSTEM = (
+    "You review a PROPOSAL against recorded decisions, using ONLY the passages provided. Reply with one JSON "
+    'object and nothing else: {"findings": [{"claim": string, "doc_id": string, "quote": string, '
+    '"relation": "may_contradict"|"may_repeat"|"suggests_replacing", "explanation": string, '
+    '"uncertainty": "low"|"medium"|"high"}]}. "claim" is the part of the proposal concerned. Each quote must be '
+    "copied verbatim from one passage, a contiguous span of at most 300 characters, preferably a complete "
+    "sentence. may_contradict: the proposal conflicts with what the decision says. may_repeat: the proposal "
+    "restates something the decision already covers. suggests_replacing: accepting the proposal would replace "
+    "the decision's stance; use it only for a decision that is still operative, never for one whose HEADER FACTS show a Superseded-By (if the proposal revives a superseded decision, that is may_repeat). If accepting the proposal would change the stance of an operative decision, include a suggests_replacing finding for it. The proposal is never authoritative and changes no accepted status. Return an "
+    'empty findings list if nothing is supported by the passages. Judgements are inferred: set uncertainty honestly.'
+)
+
+
+def call_review_model(proposal: str, facts: str, passages: list[dict]) -> dict:
+    import anthropic
+
+    load_env()
+    client = anthropic.Anthropic(timeout=60, max_retries=1)
+    body = "\n\n".join(f"[{p['doc_id']} | {p['locator']}]\n{p['text']}" for p in passages)
+    msg = client.messages.create(
+        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5"), max_tokens=2000, system=REVIEW_SYSTEM,
+        messages=[{"role": "user", "content": f"PROPOSAL:\n{proposal}\n\nHEADER FACTS:\n{facts}\n\nPASSAGES:\n{body}"}])
+    raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
+    m = re.search(r"\{.*\}", raw, re.S)
+    if not m:
+        raise ValueError("model returned no JSON object")
+    return json.loads(m.group(0))
+
+
+def _draft_md(proposal: str, findings: list[s.ProposalFinding], contacts: list[str]) -> str:
+    """Deterministic draft: the proposal text as written plus the verified findings. Never model-authored."""
+    targets = sorted({f.doc_id for f in findings if f.relation == "suggests_replacing"})
+    conflicts = [f for f in findings if f.relation == "may_contradict"]
+    md = ["# Proposal draft", "", "Status: Draft (PROPOSAL, not accepted)"]
+    md.append("Proposes-To-Replace: " + (", ".join(t.replace("pep-0", "PEP ") for t in targets) + " (suggestion only)"
+                                         if targets else "none"))
+    md += ["", "## Summary", proposal.strip(), "", "## Conflicts found"]
+    md += [f"- {f.doc_id.replace('pep-0', 'PEP ')} ({f.locator}): {f.explanation}" for f in conflicts] or ["- none found"]
+    md += ["", "## Recorded contacts"] + ([f"- {c}" for c in contacts] or ["- none"])
+    return "\n".join(md) + "\n"
+
+
+def review(proposal: str, mode_preference: str = "AUTO") -> Iterator[dict]:
+    if mode_preference == "REPLAY":
+        for ev in json.loads((corpus.ROOT / "packages" / "contracts" / "fixtures"
+                              / "stream_review_proposal.json").read_text()):
+            if ev["type"] == "request_started":
+                ev["mode"] = "REPLAY"
+            if ev["type"] == "review_completed":
+                ev["provenance"] = s.Provenance(
+                    mode_used="REPLAY", hydradb_requests=0, hydradb_failures=0, hydradb_evidence_doc_ids=[],
+                    model_requests=0, model_failures=0, model_completed=False).model_dump()
+            yield ev
+        return
+    load_env()
+    have_hydra, have_model = bool(os.environ.get("HYDRADB_API_KEY")), bool(os.environ.get("ANTHROPIC_API_KEY"))
+    run = Run("LIVE" if have_hydra and have_model else "LOCAL")
+    yield run.emit(type="request_started", mode=run.mode, snapshot_id=corpus.SNAP)
+    try:
+        passages, hydra_ids, hdb_req, hdb_fail = yield from _retrieve(run, proposal, have_hydra)
+        inspected = list(dict.fromkeys(p["doc_id"] for p in passages))[:3]
+        ctx = [p for p in passages if p["doc_id"] in inspected]
+        for d in inspected:
+            for sec in corpus.sections(d):
+                if sec.locator in ("Header", "Abstract"):
+                    ctx.append({"doc_id": d, "locator": sec.locator, "text": sec.text[:1500]})
+        for ev in run.tool("find_conflicts", {"proposal": proposal[:200], "doc_ids": inspected},
+                           lambda: _review_model(proposal, inspected, ctx)):
+            yield ev
+        if isinstance(run.result, Exception):
+            yield run.emit(type="error", code="model_unavailable", retryable=True,
+                           message="The model could not be reached; no review was generated.")
+            return
+        findings: list[s.ProposalFinding] = []
+        for i, f in enumerate(run.result.get("findings") or [], 1):
+            d, q = f.get("doc_id"), f.get("quote") or ""
+            if d in inspected and quote_in_source(q, corpus.text(d)) and f.get("relation") in (
+                    "may_contradict", "may_repeat", "suggests_replacing"):
+                if f["relation"] == "suggests_replacing" and corpus.BY_ID[d]["superseded_by"]:
+                    f["relation"] = "may_repeat"  # a superseded decision is not replaced again
+                findings.append(s.ProposalFinding(
+                    finding_id=f"f{i}", claim=str(f.get("claim") or "")[:300], doc_id=d, source_url=corpus.pep_url(d),
+                    quote=norm(q), locator=corpus.locate(d, q), relation=f["relation"],
+                    explanation=str(f.get("explanation") or ""),
+                    uncertainty=f.get("uncertainty") if f.get("uncertainty") in ("low", "medium", "high") else "medium"))
+        edges = []
+        for d in inspected:  # authoritative header edges only for decisions we actually read
+            for rel, tgt, quote in corpus.header_edges(d):
+                in_c = tgt in corpus.BY_ID
+                if in_c and tgt not in inspected:
+                    continue
+                edges.append(s.EvidenceEdge(
+                    edge_id=f"{d}:{rel}:{tgt}", source_doc_id=d, target_doc_id=tgt, relation=rel, origin="source_header",
+                    target_in_corpus=in_c, supporting_evidence=[s.EvidenceRef(doc_id=d, quote=quote, locator="Header")]))
+        for f in findings:  # proposal-origin edges: never replaces / superseded_by
+            ev_ref = [s.EvidenceRef(doc_id=f.doc_id, quote=f.quote, locator=f.locator)]
+            if f.relation == "may_contradict":
+                edges.append(s.EvidenceEdge(
+                    edge_id=f"proposal:potential_conflict:{f.finding_id}", source_doc_id="proposal",
+                    target_doc_id=f.doc_id, relation="potential_conflict", origin="inferred", target_in_corpus=True,
+                    supporting_evidence=ev_ref, explanation=f.explanation, uncertainty=f.uncertainty))
+            elif f.relation == "suggests_replacing":
+                edges.append(s.EvidenceEdge(
+                    edge_id=f"proposal:proposes_to_replace:{f.finding_id}", source_doc_id="proposal",
+                    target_doc_id=f.doc_id, relation="proposes_to_replace", origin="proposal", target_in_corpus=True,
+                    supporting_evidence=ev_ref, explanation="Suggestion only; the decision's status and edges are unchanged."))
+        contacts = list(dict.fromkeys(a for d in {f.doc_id for f in findings} for a in corpus.BY_ID[d]["authors"]))
+        used = {d for d in hydra_ids if d in inspected}
+        live = bool(used) and (not findings or bool(used & {f.doc_id for f in findings}))
+        prov = s.Provenance(
+            mode_used="LIVE" if live else "LOCAL", hydradb_requests=hdb_req, hydradb_failures=hdb_fail,
+            hydradb_evidence_doc_ids=sorted(used) if live else [], model_requests=1, model_failures=0,
+            model_completed=True)
+        yield run.emit(
+            type="review_completed", findings=[f.model_dump() for f in findings], inspected_doc_ids=inspected,
+            evidence_edges=[e.model_dump() for e in edges], recorded_contacts=contacts,
+            draft_md=_draft_md(proposal, findings, contacts), as_of=corpus.SNAP, provenance=prov.model_dump())
+    except Exception as e:
+        yield run.emit(type="error", code="internal_error", retryable=False, message=f"{type(e).__name__}: {e}")
+
+
+def _review_model(proposal: str, inspected: list[str], ctx: list[dict]) -> tuple[str, list[str], Any]:
+    out = call_review_model(proposal, _facts(inspected), ctx[:14])
+    n = len(out.get("findings") or [])
+    return f"{n} candidate finding(s) from {len(inspected)} decision(s); quotes verified next", inspected, out
