@@ -80,5 +80,5 @@ class Hydra:
     def query(self, collections: list[str], query: str, max_results: int = 8, graph: bool = True) -> dict:
         r = self.http.post("/query", json={
             "database": self.database, "collections": collections, "type": "knowledge", "query": query,
-            "graph_context": graph, "max_results": max_results, "mode": "fast"})
+            "graph_context": graph, "max_results": max_results, "mode": "thinking"})
         return self._json(r).get("data") or {}
