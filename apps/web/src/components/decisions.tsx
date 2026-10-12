@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Search, ArrowUpRight, BookOpen } from "lucide-react";
+import { Search, ArrowUpRight, BookOpen, Users, Link2, GitBranch, MessageCircle } from "lucide-react";
 import type { Schema, Transport } from "@/lib/contracts";
 import { docLabel } from "@/lib/contracts";
 import { loadDetail } from "@/lib/api";
@@ -39,6 +39,12 @@ export function Decisions({ documents, snapshot, transport }: { documents: Schem
       <strong>{item.title}</strong><span className="decision-status">Source status: {item.source_status}</span>
       {item.superseded_by.length > 0 && <span className="decision-relation">Superseded by {item.superseded_by.map(ref => docLabel(ref.doc_id)).join(", ")}</span>}
       {item.missing_successors.length > 0 && <span className="decision-gap">Missing successor: {item.missing_successors.map(docLabel).join(", ")}</span>}
+      <span className="decision-chips">
+        {!!item.authors.length && <span className="decision-chip"><Users size={12} aria-hidden="true" />Recorded contacts: {item.authors.length}</span>}
+        {!!item.replaces.length && <span className="decision-chip"><GitBranch size={12} aria-hidden="true" />Replaces {item.replaces.map(ref => docLabel(ref.doc_id)).join(", ")}</span>}
+        {item.resolution_url && <span className="decision-chip"><Link2 size={12} aria-hidden="true" />Resolution</span>}
+        {item.discussions_to && <span className="decision-chip"><MessageCircle size={12} aria-hidden="true" />Discussion</span>}
+      </span>
     </button>)}</div>
     {!visible.length && <p className="empty-inline">No matching decisions. Try a title, PEP number, or source status.</p>}
     {doc && <div className="decision-detail"><SourceLink url={doc.source_url}>{docLabel(doc.doc_id)} source</SourceLink><h3>Recorded contacts</h3><ul>{doc.authors.map(author => <li key={author}>{author}</li>)}</ul><button className="text-button" onClick={() => void read(doc.doc_id)} disabled={loading}><BookOpen size={14} />{loading ? "Loading sections…" : "Read source sections"}</button>

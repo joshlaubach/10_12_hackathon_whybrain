@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowUp, BrainCircuit, Files, MessageCircle, FilePenLine, ChartNoAxesColumn, ArrowRight, Square, Check, GitBranch } from "lucide-react";
+import { ArrowUp, BrainCircuit, Files, MessageCircle, FilePenLine, ChartNoAxesColumn, ArrowRight, Square, Check, GitBranch, Link2, AlertTriangle, Fingerprint } from "lucide-react";
 import type { Schema, Transport } from "@/lib/contracts";
 import { loadCorpus } from "@/lib/api";
 import { errorBody } from "@/lib/errors";
@@ -76,6 +76,12 @@ export function Workspace({ initialList, initialHealth, initialAnswer, snapshotD
           <span className="mode-indicator" role="status">{visible.terminal ? `${visible.fixture ? "Recorded " : ""}${visible.terminal.provenance.mode_used}` : "Awaiting response"}</span>
           <label className="sr-only" htmlFor="data-source">Data source</label><select id="data-source" value={source} onChange={e => void changeSource(e.target.value)}><option value="mock">Mock playback</option><option value="api">Connected API</option><option value="replay">API replay</option></select>
         </div></div>
+        {list && health && <section className="corpus-stat-strip" aria-label="Corpus statistics"><dl>
+          <div><dt><Files size={14} aria-hidden="true" />Documents</dt><dd>{list.documents.length}</dd></div>
+          <div><dt><Link2 size={14} aria-hidden="true" />Source-header links</dt><dd>{health.corpus.source_header_edges}</dd></div>
+          <div><dt><AlertTriangle size={14} aria-hidden="true" />Missing successors</dt><dd>{health.corpus.missing_successors}</dd></div>
+          <div className="snapshot-stat"><dt><Fingerprint size={14} aria-hidden="true" />Snapshot id</dt><dd>{list.snapshot_id}</dd></div>
+        </dl>{health.corpus.documents !== list.documents.length && <p className="fine-print">The corpus reports {health.corpus.documents} documents; {list.documents.length} are listed.</p>}</section>}
         {view !== "Review Proposal" && view !== "Evaluation" && <section className="question-panel" aria-label="Ask about a decision"><form onSubmit={e => { e.preventDefault(); askQuestion(); }}><label className="sr-only" htmlFor="question">Ask a question</label><MessageCircle size={21} strokeWidth={1.5} /><input id="question" value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask why a decision was made…" required disabled={ask.busy} /><button type="submit" className="ask-button" disabled={ask.busy || !question.trim()} aria-label="Ask why"><ArrowUp size={20} /></button></form><div className="example-questions"><span>{transport === "mock" ? "Recorded examples" : "Try a question"}</span>{scenarios.slice(0, 3).map(scenario => <button key={scenario.id} onClick={() => askQuestion(scenario.question)} disabled={ask.busy}>{scenario.label}<ArrowRight size={12} /></button>)}{transport === "mock" && <button onClick={() => askQuestion(scenarios[3].question)} disabled={ask.busy}>Error example</button>}</div></section>}
         {loading && <p className="loading-message" role="status">Loading corpus from {transport === "mock" ? "mock fixtures" : "the API"}…</p>}
         {corpusError && <><ErrorNotice error={corpusError} /><button className="text-button" onClick={() => void changeSource(source)}>Retry connection</button></>}
