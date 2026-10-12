@@ -1,4 +1,4 @@
-# Why Brain: instructions for coding agents
+# yBrain: instructions for coding agents
 
 Answers "Why did we decide that?" from a decision graph (public PEPs stand in for a company's decision log), shows what superseded a decision with cited evidence, reviews a new proposal against that evidence, and saves it as a clearly labeled draft. Built for the Company Brain Hackathon (HydraDB + Anthropic Sonnet). Demo story: explain why PEP 386 was replaced -> review one proposal against PEP 440's rationale -> save a labeled draft -> retrieve it again.
 
