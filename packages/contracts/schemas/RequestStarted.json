@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "fixture": {
+      "default": false,
+      "description": "True for recorded fixtures; the UI shows 'Mock data'",
+      "title": "Fixture",
+      "type": "boolean"
+    },
+    "mode": {
+      "description": "Intended mode. The answer's mode is provenance.mode_used",
+      "enum": [
+        "LIVE",
+        "LOCAL",
+        "REPLAY"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "seq": {
+      "description": "Strictly increasing within a request, starting at 0",
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "snapshot_id": {
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "type": {
+      "const": "request_started",
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "seq",
+    "type",
+    "mode",
+    "snapshot_id"
+  ],
+  "title": "RequestStarted",
+  "type": "object"
+}

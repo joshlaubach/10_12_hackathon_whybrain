@@ -1,0 +1,107 @@
+{
+  "additionalProperties": false,
+  "description": "A saved proposal. It never changes accepted documents or authoritative edges.\n\nProvider indexing completion and retrieval verification are tracked separately.\n`status` is 'indexed' only when the provider finished indexing AND a retrieval of\nthis draft_id read from the real store (HydraDB, or the explicit local store in\nLOCAL mode), not from the backend's cached save response.",
+  "properties": {
+    "body_md": {
+      "title": "Body Md",
+      "type": "string"
+    },
+    "content_hash": {
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "draft_id": {
+      "title": "Draft Id",
+      "type": "string"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "fixture": {
+      "default": false,
+      "title": "Fixture",
+      "type": "boolean"
+    },
+    "label": {
+      "const": "PROPOSAL",
+      "default": "PROPOSAL",
+      "title": "Label",
+      "type": "string"
+    },
+    "proposes_to_replace": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Proposes To Replace",
+      "type": "array"
+    },
+    "provider_indexing": {
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "title": "Provider Indexing",
+      "type": "string"
+    },
+    "retrieval_verification": {
+      "enum": [
+        "pending",
+        "verified",
+        "failed"
+      ],
+      "title": "Retrieval Verification",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "indexed",
+        "failed"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "verified_via": {
+      "anyOf": [
+        {
+          "enum": [
+            "hydradb",
+            "local_store"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Verified Via"
+    }
+  },
+  "required": [
+    "draft_id",
+    "content_hash",
+    "title",
+    "body_md",
+    "proposes_to_replace",
+    "status",
+    "provider_indexing",
+    "retrieval_verification"
+  ],
+  "title": "DraftRecord",
+  "type": "object"
+}

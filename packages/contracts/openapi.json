@@ -1,0 +1,1526 @@
+{
+  "components": {
+    "schemas": {
+      "AnswerCompleted": {
+        "additionalProperties": false,
+        "properties": {
+          "abstain_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Abstain Reason"
+          },
+          "abstained": {
+            "title": "Abstained",
+            "type": "boolean"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "as_of": {
+            "description": "Corpus snapshot id; conclusions hold as of this snapshot",
+            "title": "As Of",
+            "type": "string"
+          },
+          "citations": {
+            "items": {
+              "$ref": "#/components/schemas/Citation"
+            },
+            "title": "Citations",
+            "type": "array"
+          },
+          "evidence_edges": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceEdge"
+            },
+            "title": "Evidence Edges",
+            "type": "array"
+          },
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "inspected_doc_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Inspected Doc Ids",
+            "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "type": {
+            "const": "answer_completed",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "answer",
+          "abstained",
+          "citations",
+          "inspected_doc_ids",
+          "evidence_edges",
+          "as_of",
+          "provenance"
+        ],
+        "title": "AnswerCompleted",
+        "type": "object"
+      },
+      "AskRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "mode_preference": {
+            "default": "AUTO",
+            "enum": [
+              "AUTO",
+              "REPLAY"
+            ],
+            "title": "Mode Preference",
+            "type": "string"
+          },
+          "question": {
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "AskRequest",
+        "type": "object"
+      },
+      "Citation": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "description": "Whitespace-normalised substring of the source document",
+            "title": "Quote",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "quote",
+          "locator",
+          "source_url"
+        ],
+        "title": "Citation",
+        "type": "object"
+      },
+      "Configured": {
+        "additionalProperties": false,
+        "properties": {
+          "anthropic": {
+            "title": "Anthropic",
+            "type": "boolean"
+          },
+          "hydradb": {
+            "title": "Hydradb",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "hydradb",
+          "anthropic"
+        ],
+        "title": "Configured",
+        "type": "object"
+      },
+      "CorpusCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "documents": {
+            "title": "Documents",
+            "type": "integer"
+          },
+          "missing_successors": {
+            "title": "Missing Successors",
+            "type": "integer"
+          },
+          "source_header_edges": {
+            "title": "Source Header Edges",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "documents",
+          "source_header_edges",
+          "missing_successors"
+        ],
+        "title": "CorpusCounts",
+        "type": "object"
+      },
+      "DecisionDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "authors": {
+            "description": "Recorded contacts from the source, not current owners",
+            "items": {
+              "type": "string"
+            },
+            "title": "Authors",
+            "type": "array"
+          },
+          "body_text": {
+            "title": "Body Text",
+            "type": "string"
+          },
+          "discussions_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Discussions To"
+          },
+          "doc_id": {
+            "description": "Stable id, e.g. pep-0386",
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "missing_successors": {
+            "description": "superseded_by ids that are not in the corpus snapshot",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Successors",
+            "type": "array"
+          },
+          "replaces": {
+            "description": "From the source Replaces header",
+            "items": {
+              "$ref": "#/components/schemas/DocRef"
+            },
+            "title": "Replaces",
+            "type": "array"
+          },
+          "resolution_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Resolution Url"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/Section"
+            },
+            "title": "Sections",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_status": {
+            "description": "Verbatim source Status header: Final, Superseded, Withdrawn, ...",
+            "title": "Source Status",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "From the source Superseded-By header",
+            "items": {
+              "$ref": "#/components/schemas/DocRef"
+            },
+            "title": "Superseded By",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "source_url",
+          "title",
+          "source_status",
+          "authors",
+          "replaces",
+          "superseded_by",
+          "missing_successors",
+          "snapshot_id",
+          "body_text",
+          "sections"
+        ],
+        "title": "DecisionDetail",
+        "type": "object"
+      },
+      "DecisionList": {
+        "additionalProperties": false,
+        "properties": {
+          "documents": {
+            "items": {
+              "$ref": "#/components/schemas/Document"
+            },
+            "title": "Documents",
+            "type": "array"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "snapshot_id",
+          "documents"
+        ],
+        "title": "DecisionList",
+        "type": "object"
+      },
+      "DocRef": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "in_corpus": {
+            "title": "In Corpus",
+            "type": "boolean"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "source_url",
+          "in_corpus"
+        ],
+        "title": "DocRef",
+        "type": "object"
+      },
+      "Document": {
+        "additionalProperties": false,
+        "properties": {
+          "authors": {
+            "description": "Recorded contacts from the source, not current owners",
+            "items": {
+              "type": "string"
+            },
+            "title": "Authors",
+            "type": "array"
+          },
+          "discussions_to": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Discussions To"
+          },
+          "doc_id": {
+            "description": "Stable id, e.g. pep-0386",
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "missing_successors": {
+            "description": "superseded_by ids that are not in the corpus snapshot",
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Successors",
+            "type": "array"
+          },
+          "replaces": {
+            "description": "From the source Replaces header",
+            "items": {
+              "$ref": "#/components/schemas/DocRef"
+            },
+            "title": "Replaces",
+            "type": "array"
+          },
+          "resolution_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Resolution Url"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "source_status": {
+            "description": "Verbatim source Status header: Final, Superseded, Withdrawn, ...",
+            "title": "Source Status",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "From the source Superseded-By header",
+            "items": {
+              "$ref": "#/components/schemas/DocRef"
+            },
+            "title": "Superseded By",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "source_url",
+          "title",
+          "source_status",
+          "authors",
+          "replaces",
+          "superseded_by",
+          "missing_successors",
+          "snapshot_id"
+        ],
+        "title": "Document",
+        "type": "object"
+      },
+      "DraftCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "body_md": {
+            "minLength": 1,
+            "title": "Body Md",
+            "type": "string"
+          },
+          "draft_id": {
+            "description": "Client-generated UUID; also the idempotency key",
+            "minLength": 8,
+            "title": "Draft Id",
+            "type": "string"
+          },
+          "proposes_to_replace": {
+            "description": "doc_ids; a proposal, never an accepted replacement",
+            "items": {
+              "type": "string"
+            },
+            "title": "Proposes To Replace",
+            "type": "array"
+          },
+          "title": {
+            "minLength": 1,
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "draft_id",
+          "title",
+          "body_md",
+          "proposes_to_replace"
+        ],
+        "title": "DraftCreateRequest",
+        "type": "object"
+      },
+      "DraftRecord": {
+        "additionalProperties": false,
+        "description": "A saved proposal. It never changes accepted documents or authoritative edges.\n\nProvider indexing completion and retrieval verification are tracked separately.\n`status` is 'indexed' only when the provider finished indexing AND a retrieval of\nthis draft_id read from the real store (HydraDB, or the explicit local store in\nLOCAL mode), not from the backend's cached save response.",
+        "properties": {
+          "body_md": {
+            "title": "Body Md",
+            "type": "string"
+          },
+          "content_hash": {
+            "title": "Content Hash",
+            "type": "string"
+          },
+          "draft_id": {
+            "title": "Draft Id",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Error"
+          },
+          "fixture": {
+            "default": false,
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "label": {
+            "const": "PROPOSAL",
+            "default": "PROPOSAL",
+            "title": "Label",
+            "type": "string"
+          },
+          "proposes_to_replace": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Proposes To Replace",
+            "type": "array"
+          },
+          "provider_indexing": {
+            "enum": [
+              "pending",
+              "completed",
+              "failed"
+            ],
+            "title": "Provider Indexing",
+            "type": "string"
+          },
+          "retrieval_verification": {
+            "enum": [
+              "pending",
+              "verified",
+              "failed"
+            ],
+            "title": "Retrieval Verification",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "indexed",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "verified_via": {
+            "anyOf": [
+              {
+                "enum": [
+                  "hydradb",
+                  "local_store"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Verified Via"
+          }
+        },
+        "required": [
+          "draft_id",
+          "content_hash",
+          "title",
+          "body_md",
+          "proposes_to_replace",
+          "status",
+          "provider_indexing",
+          "retrieval_verification"
+        ],
+        "title": "DraftRecord",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "model_unavailable",
+              "hydradb_unavailable",
+              "retrieval_failed",
+              "invalid_request",
+              "draft_conflict",
+              "not_found",
+              "stream_interrupted",
+              "timeout",
+              "tool_limit_exceeded",
+              "internal_error"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Request Id"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "EvidenceEdge": {
+        "additionalProperties": false,
+        "properties": {
+          "edge_id": {
+            "title": "Edge Id",
+            "type": "string"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Explanation"
+          },
+          "origin": {
+            "enum": [
+              "source_header",
+              "proposal",
+              "inferred"
+            ],
+            "title": "Origin",
+            "type": "string"
+          },
+          "relation": {
+            "enum": [
+              "replaces",
+              "superseded_by",
+              "proposes_to_replace",
+              "potential_conflict"
+            ],
+            "title": "Relation",
+            "type": "string"
+          },
+          "source_doc_id": {
+            "description": "A doc_id, 'proposal', or 'draft:<draft_id>'",
+            "title": "Source Doc Id",
+            "type": "string"
+          },
+          "supporting_evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceRef"
+            },
+            "title": "Supporting Evidence",
+            "type": "array"
+          },
+          "target_doc_id": {
+            "title": "Target Doc Id",
+            "type": "string"
+          },
+          "target_in_corpus": {
+            "description": "False renders as an explicit gap (missing successor)",
+            "title": "Target In Corpus",
+            "type": "boolean"
+          },
+          "uncertainty": {
+            "anyOf": [
+              {
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Uncertainty"
+          }
+        },
+        "required": [
+          "edge_id",
+          "source_doc_id",
+          "target_doc_id",
+          "relation",
+          "origin",
+          "target_in_corpus",
+          "supporting_evidence"
+        ],
+        "title": "EvidenceEdge",
+        "type": "object"
+      },
+      "EvidenceRef": {
+        "additionalProperties": false,
+        "properties": {
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "description": "Whitespace-normalised substring of the source document",
+            "title": "Quote",
+            "type": "string"
+          }
+        },
+        "required": [
+          "doc_id",
+          "quote",
+          "locator"
+        ],
+        "title": "EvidenceRef",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "configured": {
+            "$ref": "#/components/schemas/Configured"
+          },
+          "corpus": {
+            "$ref": "#/components/schemas/CorpusCounts"
+          },
+          "note": {
+            "default": "Configuration only. The mode of an answer is provenance.mode_used, never this.",
+            "title": "Note",
+            "type": "string"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "configured",
+          "snapshot_id",
+          "corpus"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "ProposalFinding": {
+        "additionalProperties": false,
+        "properties": {
+          "claim": {
+            "description": "The part of the proposal this finding concerns",
+            "title": "Claim",
+            "type": "string"
+          },
+          "doc_id": {
+            "title": "Doc Id",
+            "type": "string"
+          },
+          "explanation": {
+            "title": "Explanation",
+            "type": "string"
+          },
+          "finding_id": {
+            "title": "Finding Id",
+            "type": "string"
+          },
+          "locator": {
+            "title": "Locator",
+            "type": "string"
+          },
+          "quote": {
+            "title": "Quote",
+            "type": "string"
+          },
+          "relation": {
+            "description": "suggests_replacing means the proposal would replace this decision if accepted; UI copy: 'Suggested replacement (not an accepted change)'",
+            "enum": [
+              "may_contradict",
+              "may_repeat",
+              "suggests_replacing"
+            ],
+            "title": "Relation",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "uncertainty": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "title": "Uncertainty",
+            "type": "string"
+          }
+        },
+        "required": [
+          "finding_id",
+          "claim",
+          "doc_id",
+          "source_url",
+          "quote",
+          "locator",
+          "relation",
+          "explanation",
+          "uncertainty"
+        ],
+        "title": "ProposalFinding",
+        "type": "object"
+      },
+      "ProposalReviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "mode_preference": {
+            "default": "AUTO",
+            "enum": [
+              "AUTO",
+              "REPLAY"
+            ],
+            "title": "Mode Preference",
+            "type": "string"
+          },
+          "proposal_text": {
+            "minLength": 1,
+            "title": "Proposal Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "proposal_text"
+        ],
+        "title": "ProposalReviewRequest",
+        "type": "object"
+      },
+      "Provenance": {
+        "additionalProperties": false,
+        "description": "What actually happened for this request. The UI shows mode_used, never health config.\n\nLIVE means HydraDB supplied evidence that is actually used in the response and the\nmodel call completed successfully. Attempted or failed calls do not qualify.",
+        "properties": {
+          "hydradb_evidence_doc_ids": {
+            "description": "Doc ids returned by successful HydraDB calls and used in this response",
+            "items": {
+              "type": "string"
+            },
+            "title": "Hydradb Evidence Doc Ids",
+            "type": "array"
+          },
+          "hydradb_failures": {
+            "minimum": 0,
+            "title": "Hydradb Failures",
+            "type": "integer"
+          },
+          "hydradb_requests": {
+            "description": "Attempted",
+            "minimum": 0,
+            "title": "Hydradb Requests",
+            "type": "integer"
+          },
+          "mode_used": {
+            "enum": [
+              "LIVE",
+              "LOCAL",
+              "REPLAY"
+            ],
+            "title": "Mode Used",
+            "type": "string"
+          },
+          "model_completed": {
+            "title": "Model Completed",
+            "type": "boolean"
+          },
+          "model_failures": {
+            "minimum": 0,
+            "title": "Model Failures",
+            "type": "integer"
+          },
+          "model_requests": {
+            "description": "Attempted",
+            "minimum": 0,
+            "title": "Model Requests",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "mode_used",
+          "hydradb_requests",
+          "hydradb_failures",
+          "hydradb_evidence_doc_ids",
+          "model_requests",
+          "model_failures",
+          "model_completed"
+        ],
+        "title": "Provenance",
+        "type": "object"
+      },
+      "RequestStarted": {
+        "additionalProperties": false,
+        "properties": {
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "mode": {
+            "description": "Intended mode. The answer's mode is provenance.mode_used",
+            "enum": [
+              "LIVE",
+              "LOCAL",
+              "REPLAY"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "snapshot_id": {
+            "title": "Snapshot Id",
+            "type": "string"
+          },
+          "type": {
+            "const": "request_started",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "mode",
+          "snapshot_id"
+        ],
+        "title": "RequestStarted",
+        "type": "object"
+      },
+      "ReviewCompleted": {
+        "additionalProperties": false,
+        "properties": {
+          "as_of": {
+            "title": "As Of",
+            "type": "string"
+          },
+          "draft_md": {
+            "title": "Draft Md",
+            "type": "string"
+          },
+          "evidence_edges": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceEdge"
+            },
+            "title": "Evidence Edges",
+            "type": "array"
+          },
+          "findings": {
+            "items": {
+              "$ref": "#/components/schemas/ProposalFinding"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "inspected_doc_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Inspected Doc Ids",
+            "type": "array"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          },
+          "recorded_contacts": {
+            "description": "Authors recorded in the cited sources; not current owners",
+            "items": {
+              "type": "string"
+            },
+            "title": "Recorded Contacts",
+            "type": "array"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "type": {
+            "const": "review_completed",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "findings",
+          "inspected_doc_ids",
+          "evidence_edges",
+          "recorded_contacts",
+          "draft_md",
+          "as_of",
+          "provenance"
+        ],
+        "title": "ReviewCompleted",
+        "type": "object"
+      },
+      "Section": {
+        "additionalProperties": false,
+        "properties": {
+          "heading": {
+            "title": "Heading",
+            "type": "string"
+          },
+          "locator": {
+            "description": "Heading text, or 'Header' for the header block",
+            "title": "Locator",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "locator",
+          "heading",
+          "text"
+        ],
+        "title": "Section",
+        "type": "object"
+      },
+      "StreamError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "model_unavailable",
+              "hydradb_unavailable",
+              "retrieval_failed",
+              "invalid_request",
+              "draft_conflict",
+              "not_found",
+              "stream_interrupted",
+              "timeout",
+              "tool_limit_exceeded",
+              "internal_error"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "retryable": {
+            "title": "Retryable",
+            "type": "boolean"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "type": {
+            "const": "error",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "code",
+          "message",
+          "retryable"
+        ],
+        "title": "StreamError",
+        "type": "object"
+      },
+      "StreamEvent": {
+        "discriminator": {
+          "mapping": {
+            "answer_completed": "#/components/schemas/AnswerCompleted",
+            "error": "#/components/schemas/StreamError",
+            "request_started": "#/components/schemas/RequestStarted",
+            "review_completed": "#/components/schemas/ReviewCompleted",
+            "tool_completed": "#/components/schemas/ToolCompleted",
+            "tool_started": "#/components/schemas/ToolStarted"
+          },
+          "propertyName": "type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RequestStarted"
+          },
+          {
+            "$ref": "#/components/schemas/ToolStarted"
+          },
+          {
+            "$ref": "#/components/schemas/ToolCompleted"
+          },
+          {
+            "$ref": "#/components/schemas/AnswerCompleted"
+          },
+          {
+            "$ref": "#/components/schemas/ReviewCompleted"
+          },
+          {
+            "$ref": "#/components/schemas/StreamError"
+          }
+        ]
+      },
+      "ToolCompleted": {
+        "additionalProperties": false,
+        "properties": {
+          "call_id": {
+            "title": "Call Id",
+            "type": "string"
+          },
+          "doc_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Doc Ids",
+            "type": "array"
+          },
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "tool": {
+            "enum": [
+              "search_brain",
+              "get_decision",
+              "follow_edges",
+              "check_status",
+              "find_conflicts"
+            ],
+            "title": "Tool",
+            "type": "string"
+          },
+          "type": {
+            "const": "tool_completed",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "call_id",
+          "tool",
+          "ok",
+          "summary",
+          "doc_ids"
+        ],
+        "title": "ToolCompleted",
+        "type": "object"
+      },
+      "ToolStarted": {
+        "additionalProperties": false,
+        "properties": {
+          "args": {
+            "additionalProperties": true,
+            "title": "Args",
+            "type": "object"
+          },
+          "call_id": {
+            "title": "Call Id",
+            "type": "string"
+          },
+          "fixture": {
+            "default": false,
+            "description": "True for recorded fixtures; the UI shows 'Mock data'",
+            "title": "Fixture",
+            "type": "boolean"
+          },
+          "request_id": {
+            "title": "Request Id",
+            "type": "string"
+          },
+          "seq": {
+            "description": "Strictly increasing within a request, starting at 0",
+            "minimum": 0,
+            "title": "Seq",
+            "type": "integer"
+          },
+          "tool": {
+            "enum": [
+              "search_brain",
+              "get_decision",
+              "follow_edges",
+              "check_status",
+              "find_conflicts"
+            ],
+            "title": "Tool",
+            "type": "string"
+          },
+          "type": {
+            "const": "tool_started",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "request_id",
+          "seq",
+          "type",
+          "call_id",
+          "tool",
+          "args"
+        ],
+        "title": "ToolStarted",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Why Brain API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/ask": {
+      "post": {
+        "operationId": "ask",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AskRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamEvent"
+                }
+              }
+            },
+            "description": "SSE stream of StreamEvent; exactly one terminal event (answer_completed | error), then the server closes"
+          }
+        }
+      }
+    },
+    "/api/decisions": {
+      "get": {
+        "operationId": "listDecisions",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionList"
+                }
+              }
+            },
+            "description": "Corpus documents"
+          }
+        }
+      }
+    },
+    "/api/decisions/{doc_id}": {
+      "get": {
+        "operationId": "getDecision",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "doc_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DecisionDetail"
+                }
+              }
+            },
+            "description": "Document with source text"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/drafts": {
+      "post": {
+        "operationId": "saveDraft",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DraftCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftRecord"
+                }
+              }
+            },
+            "description": "Existing record (same draft_id and content_hash)"
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftRecord"
+                }
+              }
+            },
+            "description": "Created"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "draft_conflict: same draft_id, different content"
+          }
+        }
+      }
+    },
+    "/api/drafts/{draft_id}": {
+      "get": {
+        "operationId": "getDraft",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "draft_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DraftRecord"
+                }
+              }
+            },
+            "description": "Record; retrieval verification reads from the store"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorBody"
+                }
+              }
+            },
+            "description": "Not found"
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Configuration only"
+          }
+        }
+      }
+    },
+    "/api/proposals/review": {
+      "post": {
+        "operationId": "reviewProposal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposalReviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamEvent"
+                }
+              }
+            },
+            "description": "SSE stream of StreamEvent; exactly one terminal event (review_completed | error), then the server closes"
+          }
+        }
+      }
+    }
+  }
+}

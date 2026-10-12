@@ -1,0 +1,25 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "doc_id": {
+      "title": "Doc Id",
+      "type": "string"
+    },
+    "locator": {
+      "title": "Locator",
+      "type": "string"
+    },
+    "quote": {
+      "description": "Whitespace-normalised substring of the source document",
+      "title": "Quote",
+      "type": "string"
+    }
+  },
+  "required": [
+    "doc_id",
+    "quote",
+    "locator"
+  ],
+  "title": "EvidenceRef",
+  "type": "object"
+}

@@ -1,0 +1,8 @@
+{
+  "draft_id": "0b0e4b6e-5c7e-4a43-9d57-2f3b7a1c9e10",
+  "title": "Sort development releases after release candidates",
+  "body_md": "# Proposal: sort development releases after release candidates\n\nStatus: Draft (PROPOSAL, not accepted)\nProposes-To-Replace: PEP 440, section \"Changing the version scheme\" (suggestion only)\n\n## Summary\nSort development releases such as 1.0.dev1 between the last release candidate and the final release, so that dev builds sort after rc builds.\n\n## Conflicts found\n- PEP 440 sorts `X.Y.devN` ahead of alpha releases and gives a rationale; this proposal must address it.\n\n## Recorded contacts for PEP 440\n- Alyssa Coghlan <ncoghlan@gmail.com>\n- Donald Stufft <donald@stufft.io>\n",
+  "proposes_to_replace": [
+    "pep-0440"
+  ]
+}

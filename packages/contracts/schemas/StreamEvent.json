@@ -1,0 +1,714 @@
+{
+  "$defs": {
+    "AnswerCompleted": {
+      "additionalProperties": false,
+      "properties": {
+        "abstain_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Abstain Reason"
+        },
+        "abstained": {
+          "title": "Abstained",
+          "type": "boolean"
+        },
+        "answer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Answer"
+        },
+        "as_of": {
+          "description": "Corpus snapshot id; conclusions hold as of this snapshot",
+          "title": "As Of",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "title": "Citations",
+          "type": "array"
+        },
+        "evidence_edges": {
+          "items": {
+            "$ref": "#/$defs/EvidenceEdge"
+          },
+          "title": "Evidence Edges",
+          "type": "array"
+        },
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "inspected_doc_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inspected Doc Ids",
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "answer_completed",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "answer",
+        "abstained",
+        "citations",
+        "inspected_doc_ids",
+        "evidence_edges",
+        "as_of",
+        "provenance"
+      ],
+      "title": "AnswerCompleted",
+      "type": "object"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "doc_id": {
+          "title": "Doc Id",
+          "type": "string"
+        },
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "description": "Whitespace-normalised substring of the source document",
+          "title": "Quote",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "doc_id",
+        "quote",
+        "locator",
+        "source_url"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "EvidenceEdge": {
+      "additionalProperties": false,
+      "properties": {
+        "edge_id": {
+          "title": "Edge Id",
+          "type": "string"
+        },
+        "explanation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Explanation"
+        },
+        "origin": {
+          "enum": [
+            "source_header",
+            "proposal",
+            "inferred"
+          ],
+          "title": "Origin",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "replaces",
+            "superseded_by",
+            "proposes_to_replace",
+            "potential_conflict"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "source_doc_id": {
+          "description": "A doc_id, 'proposal', or 'draft:<draft_id>'",
+          "title": "Source Doc Id",
+          "type": "string"
+        },
+        "supporting_evidence": {
+          "items": {
+            "$ref": "#/$defs/EvidenceRef"
+          },
+          "title": "Supporting Evidence",
+          "type": "array"
+        },
+        "target_doc_id": {
+          "title": "Target Doc Id",
+          "type": "string"
+        },
+        "target_in_corpus": {
+          "description": "False renders as an explicit gap (missing successor)",
+          "title": "Target In Corpus",
+          "type": "boolean"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        }
+      },
+      "required": [
+        "edge_id",
+        "source_doc_id",
+        "target_doc_id",
+        "relation",
+        "origin",
+        "target_in_corpus",
+        "supporting_evidence"
+      ],
+      "title": "EvidenceEdge",
+      "type": "object"
+    },
+    "EvidenceRef": {
+      "additionalProperties": false,
+      "properties": {
+        "doc_id": {
+          "title": "Doc Id",
+          "type": "string"
+        },
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "description": "Whitespace-normalised substring of the source document",
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "doc_id",
+        "quote",
+        "locator"
+      ],
+      "title": "EvidenceRef",
+      "type": "object"
+    },
+    "ProposalFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "claim": {
+          "description": "The part of the proposal this finding concerns",
+          "title": "Claim",
+          "type": "string"
+        },
+        "doc_id": {
+          "title": "Doc Id",
+          "type": "string"
+        },
+        "explanation": {
+          "title": "Explanation",
+          "type": "string"
+        },
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "locator": {
+          "title": "Locator",
+          "type": "string"
+        },
+        "quote": {
+          "title": "Quote",
+          "type": "string"
+        },
+        "relation": {
+          "description": "suggests_replacing means the proposal would replace this decision if accepted; UI copy: 'Suggested replacement (not an accepted change)'",
+          "enum": [
+            "may_contradict",
+            "may_repeat",
+            "suggests_replacing"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "source_url": {
+          "title": "Source Url",
+          "type": "string"
+        },
+        "uncertainty": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Uncertainty",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "claim",
+        "doc_id",
+        "source_url",
+        "quote",
+        "locator",
+        "relation",
+        "explanation",
+        "uncertainty"
+      ],
+      "title": "ProposalFinding",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "What actually happened for this request. The UI shows mode_used, never health config.\n\nLIVE means HydraDB supplied evidence that is actually used in the response and the\nmodel call completed successfully. Attempted or failed calls do not qualify.",
+      "properties": {
+        "hydradb_evidence_doc_ids": {
+          "description": "Doc ids returned by successful HydraDB calls and used in this response",
+          "items": {
+            "type": "string"
+          },
+          "title": "Hydradb Evidence Doc Ids",
+          "type": "array"
+        },
+        "hydradb_failures": {
+          "minimum": 0,
+          "title": "Hydradb Failures",
+          "type": "integer"
+        },
+        "hydradb_requests": {
+          "description": "Attempted",
+          "minimum": 0,
+          "title": "Hydradb Requests",
+          "type": "integer"
+        },
+        "mode_used": {
+          "enum": [
+            "LIVE",
+            "LOCAL",
+            "REPLAY"
+          ],
+          "title": "Mode Used",
+          "type": "string"
+        },
+        "model_completed": {
+          "title": "Model Completed",
+          "type": "boolean"
+        },
+        "model_failures": {
+          "minimum": 0,
+          "title": "Model Failures",
+          "type": "integer"
+        },
+        "model_requests": {
+          "description": "Attempted",
+          "minimum": 0,
+          "title": "Model Requests",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "mode_used",
+        "hydradb_requests",
+        "hydradb_failures",
+        "hydradb_evidence_doc_ids",
+        "model_requests",
+        "model_failures",
+        "model_completed"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "RequestStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "mode": {
+          "description": "Intended mode. The answer's mode is provenance.mode_used",
+          "enum": [
+            "LIVE",
+            "LOCAL",
+            "REPLAY"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "snapshot_id": {
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "type": {
+          "const": "request_started",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "mode",
+        "snapshot_id"
+      ],
+      "title": "RequestStarted",
+      "type": "object"
+    },
+    "ReviewCompleted": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "title": "As Of",
+          "type": "string"
+        },
+        "draft_md": {
+          "title": "Draft Md",
+          "type": "string"
+        },
+        "evidence_edges": {
+          "items": {
+            "$ref": "#/$defs/EvidenceEdge"
+          },
+          "title": "Evidence Edges",
+          "type": "array"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/ProposalFinding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "inspected_doc_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Inspected Doc Ids",
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        },
+        "recorded_contacts": {
+          "description": "Authors recorded in the cited sources; not current owners",
+          "items": {
+            "type": "string"
+          },
+          "title": "Recorded Contacts",
+          "type": "array"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "review_completed",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "findings",
+        "inspected_doc_ids",
+        "evidence_edges",
+        "recorded_contacts",
+        "draft_md",
+        "as_of",
+        "provenance"
+      ],
+      "title": "ReviewCompleted",
+      "type": "object"
+    },
+    "StreamError": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "model_unavailable",
+            "hydradb_unavailable",
+            "retrieval_failed",
+            "invalid_request",
+            "draft_conflict",
+            "not_found",
+            "stream_interrupted",
+            "timeout",
+            "tool_limit_exceeded",
+            "internal_error"
+          ],
+          "title": "Code",
+          "type": "string"
+        },
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "type": {
+          "const": "error",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "code",
+        "message",
+        "retryable"
+      ],
+      "title": "StreamError",
+      "type": "object"
+    },
+    "ToolCompleted": {
+      "additionalProperties": false,
+      "properties": {
+        "call_id": {
+          "title": "Call Id",
+          "type": "string"
+        },
+        "doc_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Doc Ids",
+          "type": "array"
+        },
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "ok": {
+          "title": "Ok",
+          "type": "boolean"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "summary": {
+          "title": "Summary",
+          "type": "string"
+        },
+        "tool": {
+          "enum": [
+            "search_brain",
+            "get_decision",
+            "follow_edges",
+            "check_status",
+            "find_conflicts"
+          ],
+          "title": "Tool",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_completed",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "call_id",
+        "tool",
+        "ok",
+        "summary",
+        "doc_ids"
+      ],
+      "title": "ToolCompleted",
+      "type": "object"
+    },
+    "ToolStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "additionalProperties": true,
+          "title": "Args",
+          "type": "object"
+        },
+        "call_id": {
+          "title": "Call Id",
+          "type": "string"
+        },
+        "fixture": {
+          "default": false,
+          "description": "True for recorded fixtures; the UI shows 'Mock data'",
+          "title": "Fixture",
+          "type": "boolean"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "seq": {
+          "description": "Strictly increasing within a request, starting at 0",
+          "minimum": 0,
+          "title": "Seq",
+          "type": "integer"
+        },
+        "tool": {
+          "enum": [
+            "search_brain",
+            "get_decision",
+            "follow_edges",
+            "check_status",
+            "find_conflicts"
+          ],
+          "title": "Tool",
+          "type": "string"
+        },
+        "type": {
+          "const": "tool_started",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id",
+        "seq",
+        "type",
+        "call_id",
+        "tool",
+        "args"
+      ],
+      "title": "ToolStarted",
+      "type": "object"
+    }
+  },
+  "discriminator": {
+    "mapping": {
+      "answer_completed": "#/$defs/AnswerCompleted",
+      "error": "#/$defs/StreamError",
+      "request_started": "#/$defs/RequestStarted",
+      "review_completed": "#/$defs/ReviewCompleted",
+      "tool_completed": "#/$defs/ToolCompleted",
+      "tool_started": "#/$defs/ToolStarted"
+    },
+    "propertyName": "type"
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/RequestStarted"
+    },
+    {
+      "$ref": "#/$defs/ToolStarted"
+    },
+    {
+      "$ref": "#/$defs/ToolCompleted"
+    },
+    {
+      "$ref": "#/$defs/AnswerCompleted"
+    },
+    {
+      "$ref": "#/$defs/ReviewCompleted"
+    },
+    {
+      "$ref": "#/$defs/StreamError"
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "request_id": "req-ask-unsupported",
+    "seq": 0,
+    "fixture": true,
+    "type": "request_started",
+    "mode": "LIVE",
+    "snapshot_id": "peps-c977468c8532"
+  },
+  {
+    "request_id": "req-ask-unsupported",
+    "seq": 1,
+    "fixture": true,
+    "type": "tool_started",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "args": {
+      "query": "who currently owns Python packaging"
+    }
+  },
+  {
+    "request_id": "req-ask-unsupported",
+    "seq": 2,
+    "fixture": true,
+    "type": "tool_completed",
+    "call_id": "call-1",
+    "tool": "search_brain",
+    "ok": true,
+    "summary": "2 passages, none name a current owner",
+    "doc_ids": [
+      "pep-0440",
+      "pep-0621"
+    ]
+  },
+  {
+    "request_id": "req-ask-unsupported",
+    "seq": 3,
+    "fixture": true,
+    "type": "answer_completed",
+    "answer": null,
+    "abstained": true,
+    "abstain_reason": "The retrieved decisions record authors only; they do not establish who currently owns Python packaging.",
+    "citations": [],
+    "inspected_doc_ids": [
+      "pep-0440",
+      "pep-0621"
+    ],
+    "evidence_edges": [],
+    "as_of": "peps-c977468c8532",
+    "provenance": {
+      "mode_used": "LIVE",
+      "hydradb_requests": 1,
+      "hydradb_failures": 0,
+      "hydradb_evidence_doc_ids": [
+        "pep-0440",
+        "pep-0621"
+      ],
+      "model_requests": 1,
+      "model_failures": 0,
+      "model_completed": true
+    }
+  }
+]

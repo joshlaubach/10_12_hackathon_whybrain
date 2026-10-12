@@ -1,0 +1,60 @@
+{
+  "additionalProperties": false,
+  "description": "What actually happened for this request. The UI shows mode_used, never health config.\n\nLIVE means HydraDB supplied evidence that is actually used in the response and the\nmodel call completed successfully. Attempted or failed calls do not qualify.",
+  "properties": {
+    "hydradb_evidence_doc_ids": {
+      "description": "Doc ids returned by successful HydraDB calls and used in this response",
+      "items": {
+        "type": "string"
+      },
+      "title": "Hydradb Evidence Doc Ids",
+      "type": "array"
+    },
+    "hydradb_failures": {
+      "minimum": 0,
+      "title": "Hydradb Failures",
+      "type": "integer"
+    },
+    "hydradb_requests": {
+      "description": "Attempted",
+      "minimum": 0,
+      "title": "Hydradb Requests",
+      "type": "integer"
+    },
+    "mode_used": {
+      "enum": [
+        "LIVE",
+        "LOCAL",
+        "REPLAY"
+      ],
+      "title": "Mode Used",
+      "type": "string"
+    },
+    "model_completed": {
+      "title": "Model Completed",
+      "type": "boolean"
+    },
+    "model_failures": {
+      "minimum": 0,
+      "title": "Model Failures",
+      "type": "integer"
+    },
+    "model_requests": {
+      "description": "Attempted",
+      "minimum": 0,
+      "title": "Model Requests",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "mode_used",
+    "hydradb_requests",
+    "hydradb_failures",
+    "hydradb_evidence_doc_ids",
+    "model_requests",
+    "model_failures",
+    "model_completed"
+  ],
+  "title": "Provenance",
+  "type": "object"
+}

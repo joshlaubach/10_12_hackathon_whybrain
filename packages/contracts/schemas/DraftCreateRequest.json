@@ -1,0 +1,37 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "body_md": {
+      "minLength": 1,
+      "title": "Body Md",
+      "type": "string"
+    },
+    "draft_id": {
+      "description": "Client-generated UUID; also the idempotency key",
+      "minLength": 8,
+      "title": "Draft Id",
+      "type": "string"
+    },
+    "proposes_to_replace": {
+      "description": "doc_ids; a proposal, never an accepted replacement",
+      "items": {
+        "type": "string"
+      },
+      "title": "Proposes To Replace",
+      "type": "array"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "draft_id",
+    "title",
+    "body_md",
+    "proposes_to_replace"
+  ],
+  "title": "DraftCreateRequest",
+  "type": "object"
+}
