@@ -11,3 +11,4 @@ node_modules/
 
 scripts/.spike_out.json
 scripts/.ingest_state.json
+.drafts/

@@ -7,7 +7,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from . import agent, corpus
+from . import agent, corpus, drafts
 from . import schemas as s
 from .hydra import load_env
 
@@ -72,3 +72,22 @@ async def review_proposal(body: s.ProposalReviewRequest, request: Request):
     events = agent.review(body.proposal_text, body.mode_preference)
     return StreamingResponse(sse(request, events), media_type="text/event-stream",
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
+
+
+@app.post("/api/drafts", response_model=s.DraftRecord)
+def save_draft(body: s.DraftCreateRequest):
+    if not drafts.DRAFT_ID_RE.match(body.draft_id):
+        return error(422, "invalid_request", "draft_id must be 8-64 characters of letters, digits, '-' or '_'")
+    try:
+        code, rec = drafts.create(body)
+    except ValueError:
+        return error(409, "draft_conflict", "draft_id already exists with different content; save as a new draft.")
+    return JSONResponse(rec, status_code=code)
+
+
+@app.get("/api/drafts/{draft_id}", response_model=s.DraftRecord)
+def get_draft(draft_id: str):
+    rec = drafts.get(draft_id) if drafts.DRAFT_ID_RE.match(draft_id) else None
+    if rec is None:
+        return error(404, "not_found", f"No draft {draft_id}")
+    return rec

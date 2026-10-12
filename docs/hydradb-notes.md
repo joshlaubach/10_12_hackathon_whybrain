@@ -23,3 +23,7 @@ Facts from `scripts/spike_hydra.py` against the live API (v2, base `https://api.
 
 ## Latencies (single calls)
 list databases ~0.4-0.8 s, database status ~0.09 s, ingest accept ~0.2-0.5 s, status poll ~0.15 s, query ~1.7 s, relations ~0.1 s, subgraph ~0.2 s.
+
+## Drafts
+- Drafts are ingested as `<draft_id>.txt` into the drafts collection (`HYDRA_DRAFTS_COLLECTION`: `wb_dev_drafts`, or `wb_demo_drafts` for the demo), prefixed `[PROPOSAL, not an accepted decision]`.
+- `provider_indexing` comes from `GET /context/status`; `retrieval_verification` is a `/query` against the drafts collection that must return a chunk whose `source_title` starts with the `draft_id`. `status: indexed` needs both. Local records live in `.drafts/` (gitignored) and hold only state; they are never what verification reads.
