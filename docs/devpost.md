@@ -1,6 +1,6 @@
 # DevPost entry draft
 
-Edit before pasting, and refine after the demo so it matches what actually works. Every `[CONFIRM: ...]` below is a claim that is not true until it has been checked; replace or delete each one before the 10 pm final submission.
+No unverified placeholders remain. Every claim below reflects something that has been checked as of about 3:20 PM on Oct 12. Re-read it after your rehearsal and the evaluation, and add the evaluation results and any end-to-end draft result only once they are real.
 
 **Title:** yBrain
 
@@ -48,7 +48,8 @@ HydraDB features we use: document ingestion with asynchronous indexing (we poll 
 - Indexing is asynchronous, so an uploaded draft is not searchable yet. A draft is only "indexed" after we read it back from the store, and the backend's cached save response does not count.
 - A proposal must never rewrite accepted history. Proposals only create a `proposes_to_replace` relation, live in a separate collection, and reusing a draft id with different content returns a conflict.
 - HydraDB's extracted graph is noisy. For PEP 386 alone it returned about 70 relations, including one that read "'dev' replaced with '@'" under the predicate `replaces`. It also gave us no way to follow a relation, and its subgraph lookup returned nothing for our documents. That is why edges come from the source headers and HydraDB's relations are only a supporting signal.
-- Format and speed. HydraDB rejected our `.rst` files, so we upload the PEPs as `.txt`. Indexing took about 96 seconds per document one at a time; four concurrent uploads brought it to about 60 seconds each. A saved draft needs one to two minutes before it can be read back, so the interface shows it as pending until then.
+- Format and speed. HydraDB rejected our `.rst` files, so we upload the PEPs as `.txt`. Indexing took about 96 seconds per document one at a time; four concurrent uploads brought it to about 60 seconds each. Indexing a saved draft took anywhere from about one to two minutes on a quiet system to about six minutes once, and in one test a draft passed our ten-minute limit. The interface shows a draft as pending until it has been read back from HydraDB, and that test draft was shown as failed instead of being reported as saved.
+- Model output varies. The same 386 question returned four citations on one run and five on the next, so our live checks assert what must be true (the header edge, verified quotes from both decisions) rather than exact counts.
 - Four hours, two AI coding agents and one human. Disjoint file ownership and a generated contract kept the work parallel.
 
 ## Accomplishments that we're proud of
@@ -56,12 +57,11 @@ HydraDB features we use: document ingestion with asynchronous indexing (we poll 
 - A contract-first build: one Pydantic source generates the OpenAPI file, TypeScript types and 14 fixtures, with a backend suite of 47 tests that check, among other things, that every quote appears in its source and every header edge matches the corpus.
 - Evidence-first design: the interface draws only typed evidence edges from the response and never infers relationships from prose.
 - Every step of the backend story has run against real HydraDB and Sonnet calls: the 386-to-440 answer with verified citations, the PEP 563 answer with PEP 749 shown as a gap, an abstention on a question the record cannot answer, a proposal review, and a draft that went from pending to indexed only after it was read back from HydraDB.
-- [CONFIRM after the demo: the same story runs end to end through the interface on live calls (explain 386, review a proposal, save a draft, retrieve it).]
-- [CONFIRM after the evaluation: results of the paired check, with and without graph expansion, with raw counts and the failures we found.]
+- The interface runs the same flows against the live API in a real browser: the 386 answer with the LIVE badge and no mock data, the PEP 563 gap, the abstention, and the proposal review with recorded contacts. Its test suite covers the stream protocol, the mock-versus-live labels and the draft states.
 
 ## What we learned
 
-- Decision memory is about relationships and status, not only similarity. A search that finds the old record is not the same as a system that knows it was replaced. [CONFIRM with evaluation results before claiming a size for this.]
+- Decision memory is about relationships and status, not only similarity. A search that finds the old record is not the same as a system that knows it was replaced.
 - Make deterministic whatever can be deterministic, and let the model explain. Supersession and quote checks do not need a model's opinion. HydraDB's extracted graph made this concrete: it is a useful hint and a bad authority.
 - "Saved" has to mean "we could read it back". A quote that appears in a source proves it was quoted accurately, not that it supports the conclusion; that still takes a human.
 - Parallel coding agents work when the contract and the file ownership are explicit before anyone starts.
@@ -87,6 +87,6 @@ HydraDB features we use: document ingestion with asynchronous indexing (we poll 
 - Creativity: evidence-first decision memory; supersession from headers, gaps shown.
 - Real-world value: any team with ADRs, RFCs or design docs has this problem.
 
-**Honest limits to keep in the submission:** one corpus snapshot; authors are recorded contacts, not current owners; a historical record is not necessarily today's specification; HydraDB's graph relations are model-extracted and noisy, so they are not used as authority; a saved draft takes one to two minutes to become searchable; the evaluation is a small curated set, not a claim of broad reliability.
+**Honest limits to keep in the submission:** one corpus snapshot; authors are recorded contacts, not current owners; a historical record is not necessarily today's specification; HydraDB's graph relations are model-extracted and noisy, so they are not used as authority; a saved draft can take from one to two minutes to several minutes to become searchable, and in one test it passed our ten-minute limit and was shown as failed; the evaluation is a small curated set, not a claim of broad reliability.
 
 **Where the new facts come from:** the HydraDB findings (extracted triplets, 70 relations for PEP 386, the `'dev' replaced with '@'` example, no relation-following operation, empty subgraph, `.rst` rejected, 96 s and 60 s indexing) and the live backend results come from the local Claude Code spike and Step 1-5 report; the 47-test count was re-run on `main` before this edit and passes. Re-check the live claims in your rehearsal before submitting, and update the test count if it changes.
