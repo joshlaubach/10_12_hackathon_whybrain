@@ -11,6 +11,22 @@ Without an API URL configured, the default is **Mock playback**, with a persiste
 
 To connect the backend, set only `NEXT_PUBLIC_API_URL=http://localhost:8000` in `apps/web/.env.local` (8001 for the Claude lane), restart Next. A configured URL starts in **Connected API**, with no initial fixture answer. Mock playback requires an explicit selection. The API base comes only from NEXT_PUBLIC_API_URL; selecting Connected API without it shows a configuration error. **API replay** explicitly sends `mode_preference: REPLAY`; Connected API sends AUTO. API failures never fall back to fixtures. Keys remain in the backend and are never loaded by this web app.
 
+## Separate café workspace (draft branch; do not merge before 4:30 PT)
+
+Leave the PEP demo checkout and server on :3100 → :8000 running unchanged. In a separate `codex/cafe-ui` worktree, install the existing lockfile with `npm ci` from `apps/web`, then run:
+
+```sh
+NEXT_PUBLIC_API_URL=http://localhost:8002 npx next dev --port 3000
+```
+
+Open http://localhost:3000. The café API must already be running separately on :8002 with `CORPUS=cafe`; the web app does not launch or reconfigure it. CORS permits http://localhost:3000 and http://localhost:3100. The command supplies the public API URL for this process without editing either setup's environment files. Restart Next after changing the URL; production builds also need the URL at build time.
+
+Corpus detection uses a `cafe-` health snapshot or `dr-` document IDs. The sidebar identifies Maple Street Café and **Fictional sample: Maple Street Café** stays beside the snapshot information in every view. The API does not provide a snapshot date, so this corpus displays **Date not provided by API** rather than inventing one. Titles, source URLs, counts, and verbatim statuses come from responses. Accepted DR-009 remains Accepted while its header relationship separately shows Superseded by DR-018; the same separation applies to Final PEP 333.
+
+Connected café questions and both proposal chips fill the relevant input only; submit explicitly to run a model request. PEP examples retain their existing text and behavior. Mock playback is intentionally PEP-only, always labeled Mock data. Café test responses live exclusively in `apps/web/tests/cafe-responses.ts`; they are not playback fixtures or shipped app data. Browser tests intercept the API and never create live drafts. The PEP-specific opt-in live smoke/browser scripts remain unchanged; live draft creation is still paused.
+
+Verified on `codex/cafe-ui`: clean `npm ci`, lint, type-check, production build, 20 unit tests, 29 intercepted/fixture Chromium tests, generated contract check, and 54 backend regression tests pass. Café answer, gap, Accepted/superseded, abstention and proposal screenshots were captured at 1440/390; desktop gap and mobile review were inspected. Browser cases assert no PEP/Python UI copy or input values after café loading, no café copy in the PEP path, response-supplied links/statuses, and no requests from café example chips. The browser gate used an isolated production server on :3103; the PEP demo server was left running unchanged. No real café provider pass was attempted, and no live drafts were created.
+
 ## Design and contract
 
 The workspace follows docs/design-reference/reference.png and the supplied tokens: Inter via next/font, a white navigation rail, a dark selected decision, and a pale workspace. Mock data uses a neutral dark outline. The header stat strip derives document count and snapshot id from /api/decisions, and source-header links/missing successors from /api/health. Counts remain response-derived; no gauges or fabricated metrics. Decision icon chips appear only for real recorded contacts, replaces, resolution and discussion fields. On narrow screens navigation becomes a top row and panels stack. Controls have visible focus and text labels; there is no decorative animation.
@@ -63,6 +79,8 @@ The dedicated polish browser test changes response counts and snapshot id and ve
 ## Requests
 
 Add one line per request for another owner (contract, backend, root config, docs). Claude reads this at each checkpoint, and sooner when something blocks you.
+
+- Optional backend metadata (not blocking): a future contract change could add `/api/health.corpus` identity metadata (`id`, `display_name`, `description`, `fictional`) alongside counts, avoiding snapshot/ID-prefix detection. Current café UI works with contract v1 and needs no backend change.
 
 - LIVE draft gate, same run, backend owner: draft `e29a595f-80fe-449d-bc3c-29a1ac27150b` returned 201/pending and remained `provider_indexing: pending`, `retrieval_verification: pending`, `verified_via: null` after 99 GET polls over two minutes, then became **failed** at the backend's 600-second limit with error "Timed out before the draft could be indexed and read back." `verified_via` stayed null. Please investigate provider ingestion/status; indexing is the sole exception to the accepted live pass. Do not ask the web lane to retry live draft creation until Josh authorizes it. Web verification is bounded to 60 seconds and exposes **Check draft status** to resume; live checks now stop before saving a draft, per Josh. Fixtures indexed after two reads and did not model this long delay. No provider state or keys were changed by the web lane.
 

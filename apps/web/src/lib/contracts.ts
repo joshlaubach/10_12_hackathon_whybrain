@@ -6,7 +6,10 @@ export type Terminal = Schema<"AnswerCompleted"> | Schema<"ReviewCompleted">;
 export type Transport = "mock" | "api";
 
 export function docLabel(id: string) {
-  return id.startsWith("pep-") ? `PEP ${Number(id.slice(4))}` : id === "proposal" ? "Proposal" : id;
+  const [prefix, suffix] = id.split("-");
+  if (prefix === "pep" && /^\d+$/.test(suffix ?? "")) return `PEP ${Number(suffix)}`;
+  if (prefix === "dr" && /^\d+$/.test(suffix ?? "")) return id.toUpperCase();
+  return id === "proposal" ? "Proposal" : id;
 }
 
 export const relationLabel: Record<Schema<"EvidenceEdge">["relation"], string> = {

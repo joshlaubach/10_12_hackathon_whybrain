@@ -8,15 +8,15 @@ import { loadDetail } from "@/lib/api";
 import { errorBody } from "@/lib/errors";
 import { ErrorNotice, SourceLink } from "./common";
 
-export function Decisions({ documents, snapshot, transport }: { documents: Schema<"Document">[]; snapshot: string; transport: Transport }) {
-  const [selected, setSelected] = useState("pep-0386");
+export function Decisions({ documents, snapshot, transport, cafe = false }: { documents: Schema<"Document">[]; snapshot: string; transport: Transport; cafe?: boolean }) {
+  const [selected, setSelected] = useState(cafe ? documents[0]?.doc_id ?? "" : "pep-0386");
   const [filter, setFilter] = useState("");
   const [detail, setDetail] = useState<Schema<"DecisionDetail"> | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Schema<"ErrorBody"> | null>(null);
   const [section, setSection] = useState(0);
   const token = useRef(0);
-  const pinned = ["pep-0386", "pep-0440", "pep-0563"];
+  const pinned = cafe ? [] : ["pep-0386", "pep-0440", "pep-0563"];
   const sorted = [...documents].sort((a, b) => (pinned.indexOf(a.doc_id) === -1 ? 99 : pinned.indexOf(a.doc_id)) - (pinned.indexOf(b.doc_id) === -1 ? 99 : pinned.indexOf(b.doc_id)));
   const visible = sorted.filter(doc => `${docLabel(doc.doc_id)} ${doc.title} ${doc.source_status}`.toLowerCase().includes(filter.toLowerCase()));
   const doc = documents.find(doc => doc.doc_id === selected);
@@ -46,7 +46,7 @@ export function Decisions({ documents, snapshot, transport }: { documents: Schem
         {item.discussions_to && <span className="decision-chip"><MessageCircle size={12} aria-hidden="true" />Discussion</span>}
       </span>
     </button>)}</div>
-    {!visible.length && <p className="empty-inline">No matching decisions. Try a title, PEP number, or source status.</p>}
+    {!visible.length && <p className="empty-inline">No matching decisions. Try a title, {cafe ? "decision ID" : "PEP number"}, or source status.</p>}
     {doc && <div className="decision-detail"><SourceLink url={doc.source_url}>{docLabel(doc.doc_id)} source</SourceLink><h3>Recorded contacts</h3><ul>{doc.authors.map(author => <li key={author}>{author}</li>)}</ul><button className="text-button" onClick={() => void read(doc.doc_id)} disabled={loading}><BookOpen size={14} />{loading ? "Loading sections…" : "Read source sections"}</button>
       {error && <ErrorNotice error={error} />}
       {detail && <><label htmlFor="library-section" className="field-label">Source section</label><select id="library-section" value={section} onChange={e => setSection(Number(e.target.value))}>{detail.sections.map((value, i) => <option value={i} key={`${value.heading}-${i}`}>{value.heading}</option>)}</select><pre className="source-text">{detail.sections[section]?.text}</pre></>}

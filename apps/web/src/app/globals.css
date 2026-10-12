@@ -45,6 +45,8 @@ nav button.active { background: #edf2ec; color: var(--text); font-weight: 600; }
 .workspace-top strong { font-weight: 500; color: var(--text); }
 .workspace-top div:first-child span { margin: 0 12px; color: var(--secondary); }
 .snapshot { display: flex; gap: 9px; }
+.snapshot:has(.fictional-label) { flex-wrap: wrap; justify-content: flex-end; }
+.snapshot .fictional-label { color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 2px 6px; }
 .workspace-body { max-width: 1540px; margin: auto; padding: 36px; }
 .page-heading { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 29px; }
 .page-heading p { margin-top: 10px; font-size: 12px; color: var(--secondary); }
