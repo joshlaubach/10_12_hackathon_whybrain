@@ -4,9 +4,9 @@
 
 yBrain (pronounced why-brain) is an AI assistant that answers one of the hardest questions at work: *"Why did we decide that?"* It connects your decisions, discussions, and owners, then shows you the full story behind every answer.
 
-![yBrain screenshot](docs/screenshot.png)
+![yBrain answering "Why was PEP 386 replaced by PEP 440?" from the live API, with citations and the source-header chain](docs/screenshot.png)
 
-[Watch the 2-minute demo](#) · [Try it live](#)
+Demo video: link added after the 10 PM recording · [Run it locally](#quick-start)
 
 ---
 
@@ -52,23 +52,35 @@ Bring your own data: architecture decision records, RFCs, meeting notes, Slack t
 
 ## Quick start
 
+You need a [HydraDB](https://hydradb.com) API key and an Anthropic API key, plus [uv](https://docs.astral.sh/uv/) and Node 20+.
+
 ```bash
-git clone https://github.com/your-org/why-brain.git
-cd why-brain
-cp .env.example .env      # add your HydraDB API key
-pip install -r requirements.txt
-python ingest.py          # loads the demo data
-python app.py             # opens at http://localhost:3000
+git clone https://github.com/joshlaubach/10_12_hackathon_whybrain.git
+cd 10_12_hackathon_whybrain
+cp .env.example .env      # add HYDRADB_API_KEY and ANTHROPIC_API_KEY (backend only, never committed)
+
+# one time: index the 24 committed PEPs into HydraDB (indexing is asynchronous; allow several minutes)
+uv run --project apps/api python scripts/ingest.py
+
+scripts/run_demo.sh       # API at http://127.0.0.1:8000 (accepted docs: wb_demo, drafts: wb_demo_drafts)
+
+cd apps/web && npm ci
+echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+npm run dev              # UI at http://localhost:3100
 ```
 
-You'll need a free [HydraDB account](https://app.hydradb.com/sign-up) and an API key.
+Notes:
+- The API uses your HydraDB database named `default-tenant`; set `HYDRADB_DATABASE` in `.env` if yours is named differently.
+- The UI also has a mock mode that replays recorded fixtures and needs no API; it is always labelled "Mock data".
+- Tests: `uv run --project apps/api pytest apps/api` and `(cd packages/contracts && npm run check)`.
+- A second, fictional sample corpus (Maple Street Café) is included: `CORPUS=cafe uv run --project apps/api python scripts/ingest.py`, then `scripts/run_cafe.sh` (port 8002).
 
 ## Built with
 
 - [HydraDB](https://hydradb.com) for memory, knowledge graph, and retrieval
-- [App-Starter](https://github.com/) for the web app foundation
-- Python and FastAPI for the backend
-- React for the interface and visualizations
+- [Anthropic Claude](https://www.anthropic.com) (Sonnet) for the agent that composes cited answers
+- Python, FastAPI and Pydantic for the backend and the API contract
+- Next.js, React and TypeScript for the interface
 
 ## What's next
 
@@ -80,7 +92,7 @@ You'll need a free [HydraDB account](https://app.hydradb.com/sign-up) and an API
 
 yBrain was created for the Company Brain Hackathon.
 
-Built by [Your Name](https://github.com/your-handle).
+Built by [Josh Laubach](https://github.com/joshlaubach).
 
 ## License
 
