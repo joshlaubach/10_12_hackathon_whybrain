@@ -4,9 +4,9 @@
 
 yBrain (pronounced why-brain) is an AI assistant that answers one of the hardest questions at work: *"Why did we decide that?"* It connects your decisions, discussions, and owners, then shows you the full story behind every answer.
 
-![yBrain screenshot](docs/screenshot.png)
+![yBrain: a LIVE PEP 386 answer with citations and source-header relationships](apps/web/public/screenshots/pep-386-live.png)
 
-[Watch the 2-minute demo](#) · [Try it live](#)
+[Follow the demo walkthrough](docs/demo-script.md) · [Run locally](#quick-start)
 
 ---
 
@@ -52,21 +52,42 @@ Bring your own data: architecture decision records, RFCs, meeting notes, Slack t
 
 ## Quick start
 
+Requirements: Node.js 20.9+, npm, and (for the backend) Python 3.11+ and [uv](https://docs.astral.sh/uv/).
+
 ```bash
-git clone https://github.com/your-org/why-brain.git
-cd why-brain
-cp .env.example .env      # add your HydraDB API key
-pip install -r requirements.txt
-python ingest.py          # loads the demo data
-python app.py             # opens at http://localhost:3000
+git clone https://github.com/joshlaubach/10_12_hackathon_whybrain.git
+cd 10_12_hackathon_whybrain
+cd apps/web
+npm ci
+npm run dev
 ```
 
-You'll need a free [HydraDB account](https://app.hydradb.com/sign-up) and an API key.
+Open http://localhost:3100. With no API URL configured, the app starts in **Mock playback**, uses the committed PEP fixtures, and displays **Mock data**. No API keys are needed for this walkthrough.
+
+For real model answers, configure the backend from the repository root:
+
+```bash
+cp .env.example .env
+# Add HYDRADB_API_KEY and ANTHROPIC_API_KEY to .env; never commit it.
+uv sync --project apps/api
+scripts/run_demo.sh
+```
+
+The PEP API runs on http://localhost:8000. In a second terminal:
+
+```bash
+cd apps/web
+NEXT_PUBLIC_API_URL=http://localhost:8000 npm run dev
+```
+
+The UI starts in **Connected API**. Only the API URL belongs in the web environment; provider keys stay in the backend. LIVE answers require the PEP corpus to be ingested into the configured HydraDB collection. To populate that collection, ingest once with `uv run --project apps/api python scripts/ingest.py --collection wb_demo --workers 4`; this uploads the committed PEP snapshot and may take several minutes.
+
+The fictional Maple Street Café corpus uses a separate API process on :8002 and a web process on :3000. See [the café run instructions](docs/web.md#separate-café-workspace-draft-branch-do-not-merge-before-430-pt). Answers report the evidence mode actually used; draft proposals remain separate from accepted records.
 
 ## Built with
 
 - [HydraDB](https://hydradb.com) for memory, knowledge graph, and retrieval
-- [App-Starter](https://github.com/) for the web app foundation
+- Next.js App Router and TypeScript for the web app
 - Python and FastAPI for the backend
 - React for the interface and visualizations
 
@@ -80,7 +101,7 @@ You'll need a free [HydraDB account](https://app.hydradb.com/sign-up) and an API
 
 yBrain was created for the Company Brain Hackathon.
 
-Built by [Your Name](https://github.com/your-handle).
+Built by [Josh Laubach](https://github.com/joshlaubach), with Claude Code and Codex.
 
 ## License
 
