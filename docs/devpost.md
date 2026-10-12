@@ -2,6 +2,8 @@
 
 **Title:** Why Brain
 
+**Elevator pitch (200 characters max):** Ask “why did we decide that?” Get cited reasons, what replaced the decision, and a check of your new proposal against past decisions, so teams stop repeating or reversing old calls.
+
 **Tagline:** Ask "Why did we decide that?" and get the cited reasoning, the decision that replaced it, and a check on your new proposal.
 
 **Description**
