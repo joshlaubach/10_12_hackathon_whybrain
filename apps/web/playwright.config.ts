@@ -5,6 +5,7 @@ process.env.NEXT_PUBLIC_API_URL ||= "http://localhost:8001";
 
 export default defineConfig({
   testDir: "./tests/browser",
+  outputDir: "./test-results/fixtures",
   fullyParallel: false,
   timeout: 30000,
   use: { baseURL: "http://localhost:3100", viewport: { width: 1440, height: 1000 }, screenshot: "only-on-failure", trace: "retain-on-failure" },
