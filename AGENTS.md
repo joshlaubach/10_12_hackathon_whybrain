@@ -37,7 +37,7 @@ No root package.json, no shared lockfile.
 - No fabricated metrics, invented confidence percentages, or decorative gauges. Show real counts and real eval results only.
 
 ## Streaming
-SSE over POST. Events carry `request_id` and strictly increasing `seq`: `request_started`, `tool_started`, `tool_completed`, then exactly one terminal event (`answer_completed` | `review_completed` | `error`), then the server closes. Close without a terminal event is `stream_interrupted` on the client. Cancel with `AbortController`; the server stops the agent when the client disconnects.
+SSE over POST, one `data: <json>` frame per event (no `event:` line; dispatch on `type`). Events carry `request_id` and strictly increasing `seq`: `request_started`, `tool_started`, `tool_completed`, then exactly one terminal event (`answer_completed` | `review_completed` | `error`), then the server closes. Close without a terminal event is `stream_interrupted` on the client. Cancel with `AbortController`; the server stops the agent when the client disconnects.
 
 ## Design tokens (starting values; Josh may revise from the screenshot in `docs/design-reference/`)
 surface/sidebar `#FFFFFF`, workspace `#F6F7EF`, text `#20211F`, secondary `#686B64`, border `#DFE2D9`, evidence (supported) `#26776B`, conflict `#956218`. Quiet, spacious analytical workspace: thin neutral borders, rounded cards, minimal shadows, simple line icons, readable sans-serif, dark selected decision card. Always pair color with a text label.
@@ -46,4 +46,4 @@ surface/sidebar `#FFFFFF`, workspace `#F6F7EF`, text `#20211F`, secondary `#686B
 `.env` (gitignored) holds `HYDRADB_API_KEY`, `ANTHROPIC_API_KEY`, backend only. `apps/web/.env.local` holds only `NEXT_PUBLIC_API_URL`. Never commit keys, never put them in the web bundle, never paste them in chat. Ports: API 8000 (integration) / 8001 (Claude lane); web 3000 / 3100 (Codex). HydraDB collections: `wb_dev_claude` (dev), `wb_demo` (demo); drafts in a separate collection from accepted decisions. Codex never touches HydraDB.
 
 ## Git
-Small commits. Merge to main at stable points; the Claude lane merges at checkpoints. Do not rebase automatically during active edits. Run before merging: `uv run --project apps/api pytest` and `(cd packages/contracts && npm run check)`; web lane also lint and type-check.
+Small commits. Merge to main at stable points; the Claude lane merges at checkpoints. Do not rebase automatically during active edits. Run before merging: `uv run --project apps/api pytest apps/api` and `(cd packages/contracts && npm run check)`; web lane also lint and type-check.
