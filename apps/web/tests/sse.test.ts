@@ -57,3 +57,11 @@ test("an unterminated SSE frame cannot silently complete", async () => {
   const text = fixture.map(e => `data: ${JSON.stringify(e)}\n\n`).join("").trimEnd();
   await assert.rejects(consumeSSE(new Response(text, { headers: { "Content-Type": "text/event-stream" } }), () => {}, new AbortController().signal, "answer_completed"), { code: "stream_interrupted" });
 });
+
+test("data-only SSE frames from the backend dispatch on payload type", async () => {
+  const text = fixture.map(e => `data: ${JSON.stringify(e)}\n\n`).join("");
+  const events: Schema<"StreamEvent">[] = [];
+  const terminal = await consumeSSE(new Response(text, { headers: { "Content-Type": "text/event-stream" } }), e => events.push(e), new AbortController().signal, "answer_completed");
+  assert.deepEqual(events, fixture);
+  assert.equal(terminal.type, "answer_completed");
+});

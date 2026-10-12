@@ -16,7 +16,7 @@ test("connected API uses response provenance and detects interrupted streams wit
       const request = route.request().postDataJSON() as Schema<"AskRequest">;
       replay = request.mode_preference === "REPLAY";
       const events = (fixtures("stream_ask_386_440") as Schema<"StreamEvent">[]).map(e => ({ ...e, fixture: replay }));
-      const body = (interrupted ? events.slice(0, -1) : events).map(e => `event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`).join("");
+      const body = (interrupted ? events.slice(0, -1) : events).map(e => `data: ${JSON.stringify(e)}\n\n`).join("");
       await route.fulfill({ headers, contentType: "text/event-stream", body });
     } else await route.fulfill({ status: 404, headers });
   });
