@@ -6,7 +6,7 @@ yBrain (pronounced why-brain) is an AI assistant that answers one of the hardest
 
 ![yBrain answering "Why was PEP 386 replaced by PEP 440?" from the live API, with citations and the source-header chain](docs/screenshot.png)
 
-[Follow the demo walkthrough](docs/demo-script.md) · [Run it locally](#quick-start). Demo video will be linked after recording.
+[Watch the demo](https://youtu.be/6P9EJdDR-Ew) · [Follow the demo walkthrough](docs/demo-script.md) · [Run it locally](#quick-start)
 
 ---
 
