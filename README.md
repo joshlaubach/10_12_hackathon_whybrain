@@ -6,7 +6,7 @@ yBrain (pronounced why-brain) is an AI assistant that answers one of the hardest
 
 ![yBrain answering "Why was PEP 386 replaced by PEP 440?" from the live API, with citations and the source-header chain](docs/screenshot.png)
 
-Demo video: link added after the 10 PM recording · [Run it locally](#quick-start)
+[Follow the demo walkthrough](docs/demo-script.md) · [Run it locally](#quick-start). Demo video will be linked after recording.
 
 ---
 
@@ -52,28 +52,37 @@ Bring your own data: architecture decision records, RFCs, meeting notes, Slack t
 
 ## Quick start
 
-You need a [HydraDB](https://hydradb.com) API key and an Anthropic API key, plus [uv](https://docs.astral.sh/uv/) and Node 20+.
+Requirements: Node.js 20.9+, npm, and (for the backend) Python 3.11+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/joshlaubach/10_12_hackathon_whybrain.git
 cd 10_12_hackathon_whybrain
-cp .env.example .env      # add HYDRADB_API_KEY and ANTHROPIC_API_KEY (backend only, never committed)
-
-# one time: index the 24 committed PEPs into HydraDB (indexing is asynchronous; allow several minutes)
-uv run --project apps/api python scripts/ingest.py
-
-scripts/run_demo.sh       # API at http://127.0.0.1:8000 (accepted docs: wb_demo, drafts: wb_demo_drafts)
-
-cd apps/web && npm ci
-echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
-npm run dev              # UI at http://localhost:3100
+cd apps/web
+npm ci
+npm run dev
 ```
 
-Notes:
-- The API uses your HydraDB database named `default-tenant`; set `HYDRADB_DATABASE` in `.env` if yours is named differently.
-- The UI also has a mock mode that replays recorded fixtures and needs no API; it is always labelled "Mock data".
-- Tests: `uv run --project apps/api pytest apps/api` and `(cd packages/contracts && npm run check)`.
-- A second, fictional sample corpus (Maple Street Café) is included: `CORPUS=cafe uv run --project apps/api python scripts/ingest.py`, then `scripts/run_cafe.sh` (port 8002).
+Open http://localhost:3100. With no API URL configured, the app starts in **Mock playback**, uses the committed PEP fixtures, and displays **Mock data**. No API keys are needed for this walkthrough.
+
+For real model answers, configure the backend from the repository root:
+
+```bash
+cp .env.example .env
+# Add HYDRADB_API_KEY and ANTHROPIC_API_KEY to .env; never commit it.
+uv sync --project apps/api
+scripts/run_demo.sh
+```
+
+The PEP API runs on http://localhost:8000. In a second terminal:
+
+```bash
+cd apps/web
+NEXT_PUBLIC_API_URL=http://localhost:8000 npm run dev
+```
+
+The UI starts in **Connected API**. Only the API URL belongs in the web environment; provider keys stay in the backend. LIVE answers require the PEP corpus to be ingested into the configured HydraDB collection. To populate that collection, ingest once with `uv run --project apps/api python scripts/ingest.py --collection wb_demo --workers 4`; this uploads the committed PEP snapshot and may take several minutes.
+
+The fictional Maple Street Café corpus uses a separate API process on :8002 and a web process on :3000. See [the café run instructions](docs/web.md#separate-café-workspace-draft-branch-do-not-merge-before-430-pt). Answers report the evidence mode actually used; draft proposals remain separate from accepted records.
 
 ## Built with
 
