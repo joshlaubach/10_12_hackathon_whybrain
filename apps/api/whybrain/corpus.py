@@ -21,13 +21,17 @@ CORPORA = {
     "peps": dict(
         name="peps", data_dir=ROOT / "data" / "peps", id_fmt="pep-{n:04d}", id_re=r"pep[-\s]?0*(\d{1,4})",
         url_fmt="https://peps.python.org/pep-{n:04d}/", noun="a corpus of Python Enhancement Proposals",
-        accepted_collection="wb_demo", drafts_collection="wb_dev_drafts", sample_note=None),
+        accepted_collection="wb_demo", drafts_collection="wb_dev_drafts", sample_note=None, tidy=False,
+        review_nudge=""),
     "cafe": dict(
         name="cafe", data_dir=ROOT / "data" / "cafe", id_fmt="dr-{n:03d}", id_re=r"\bdr[-\s]?0*(\d{1,3})\b",
         url_fmt="https://github.com/joshlaubach/10_12_hackathon_whybrain/blob/main/data/cafe/dr-{n:03d}.txt",
         noun="a log of decision records (DR) for Maple Street Café, a fictional sample café",
         accepted_collection="wb_cafe", drafts_collection="wb_cafe_drafts",
-        sample_note="Maple Street Café is a fictional sample corpus."),
+        sample_note="Maple Street Café is a fictional sample corpus.", tidy=True,
+        review_nudge=(" If the proposal reverses the stated rationale of a decision (it reinstates something the "
+                      "decision dropped for the reasons it gives in its Why or Context), report may_contradict for "
+                      "that decision, in addition to any suggests_replacing finding.")),
 }
 CFG = CORPORA[os.environ.get("CORPUS", "peps")]
 DATA_DIR = CFG["data_dir"]
@@ -50,6 +54,14 @@ def mentioned(text_: str) -> list[str]:
 def display(doc_id: str) -> str:
     """Short human label: pep-0386 -> 'PEP 386' (legacy rule), dr-014 -> 'DR-014'."""
     return doc_id.replace("pep-0", "PEP ") if CFG["name"] == "peps" else doc_id.upper()
+
+
+def prose_ids(text_: str | None) -> str | None:
+    """Normalise doc-id casing in answer prose (dr-014 -> DR-014). Only for corpora with tidy=True."""
+    if not text_ or not CFG["tidy"]:
+        return text_
+    return re.sub(r"\b[a-z]+-\d+\b", lambda m: display(m.group()) if m.group().lower() in BY_ID else m.group(),
+                  text_, flags=re.I)
 
 
 def source_url(doc_id: str) -> str:

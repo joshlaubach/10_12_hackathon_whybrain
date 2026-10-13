@@ -279,6 +279,9 @@ def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
                     supporting_evidence=[s.EvidenceRef(doc_id=d, quote=quote, locator="Header")]))
         if not supported:
             cits, edges = [], []  # an abstention cites nothing and draws nothing
+        elif corpus.CFG["tidy"]:
+            cited = {c.doc_id for c in cits}  # keep edges touching a cited document (gaps included)
+            edges = [e for e in edges if e.source_doc_id in cited or e.target_doc_id in cited]
         used = {d for d in hydra_ids if d in inspected}
         live = model_ok and bool(used) and (not supported or bool(used & {c.doc_id for c in cits}))
         prov = s.Provenance(
@@ -286,8 +289,8 @@ def ask(question: str, mode_preference: str = "AUTO") -> Iterator[dict]:
             hydradb_evidence_doc_ids=sorted(used) if live else [], model_requests=1, model_failures=0,
             model_completed=True)
         yield run.emit(
-            type="answer_completed", answer=out["answer"] if supported else None, abstained=not supported,
-            abstain_reason=reason, citations=[c.model_dump() for c in cits], inspected_doc_ids=inspected,
+            type="answer_completed", answer=corpus.prose_ids(out["answer"]) if supported else None,
+            abstained=not supported, abstain_reason=corpus.prose_ids(reason), citations=[c.model_dump() for c in cits], inspected_doc_ids=inspected,
             evidence_edges=[e.model_dump() for e in edges], as_of=corpus.SNAP, provenance=prov.model_dump())
     except ToolLimit:
         yield run.emit(type="error", code="tool_limit_exceeded", retryable=False,
@@ -342,7 +345,7 @@ def call_review_model(proposal: str, facts: str, passages: list[dict]) -> dict:
     client = anthropic.Anthropic(timeout=60, max_retries=1)
     body = "\n\n".join(f"[{p['doc_id']} | {p['locator']}]\n{p['text']}" for p in passages)
     msg = client.messages.create(
-        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5"), max_tokens=2000, system=REVIEW_SYSTEM,
+        model=os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-5-5"), max_tokens=2000, system=REVIEW_SYSTEM + corpus.CFG["review_nudge"],
         messages=[{"role": "user", "content": f"PROPOSAL:\n{proposal}\n\nHEADER FACTS:\n{facts}\n\nPASSAGES:\n{body}"}])
     raw = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
     m = re.search(r"\{.*\}", raw, re.S)

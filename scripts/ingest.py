@@ -46,8 +46,13 @@ def main():
 
     def one(doc):
         try:
-            if h.status(a.collection, doc) == "completed":
+            st = h.status(a.collection, doc)
+            if st == "completed":
                 return log(doc, state="already_indexed")
+            if st not in ("not_found", "errored", "unknown"):  # accepted earlier and still indexing: just wait
+                log(doc, state="resumed", provider_state=st)
+                took = h.wait_indexed(a.collection, doc, timeout=1800)
+                return log(doc, state="indexed", index_s=round(took, 1))
             h.ingest_text(a.collection, doc, (corpus.DATA_DIR / docs[doc]["file"]).read_text(),
                           {"title": docs[doc]["title"], "source_status": docs[doc]["source_status"]})
             log(doc, state="accepted")
